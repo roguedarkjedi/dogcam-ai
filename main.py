@@ -4,7 +4,7 @@ from dogcamsocket import DogCamSocket
 
 print("Starting streamer")
 dcs = DogCamStreamer("rtmp://192.168.50.4/camera/g")
-dcso = DogCamSocket("ws://192.168.50.169:5867")
+dcso = DogCamSocket("ws://192.168.50.169:5867/")
 dcai = DogCamAI()
 
 print("Starting socket connection")
