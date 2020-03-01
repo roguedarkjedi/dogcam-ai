@@ -65,10 +65,9 @@ class DogCamStreamer():
         self.__LastReadTime = time.time()
   
   def Read(self):
-    if not self.__img:
-      return None
+    if self.__img is not None:
+      self.__Read = True  
     
-    self.__Read = True
     return self.__img
   
   def Stop(self):
