@@ -42,7 +42,7 @@ class DogCamSocket():
       return
       
     JsonMessage = {
-      "action": direction
+      "action": direction,
       "source": "dogcamai"
     }
     
