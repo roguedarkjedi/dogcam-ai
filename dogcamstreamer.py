@@ -19,10 +19,6 @@ class DogCamStreamer():
   def __init__(self, inURL):
     self.vidURL = inURL
   
-  def __del__(self):
-    if self.__cap is not None:
-      self.__cap.Release()
-  
   def Open(self):
     self.__cap = cv2.VideoCapture(self.vidURL)
     if not self.__cap.isOpened():
@@ -73,3 +69,7 @@ class DogCamStreamer():
   def Stop(self):
     self.__Running = False
     self.__thread.join()
+    
+    time.sleep(1)
+    if self.__cap is not None:
+      self.__cap.Release()
