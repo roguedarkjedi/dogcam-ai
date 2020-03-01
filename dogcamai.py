@@ -36,9 +36,6 @@ class DogCamAI():
     
     self.__thread = threading.Thread(target=self.__Update)
     
-  def __del__(self):
-    self.Stop()
-    
   def SetDimensions(self, W, H):
     self.width = int(W)
     self.height = int(H)
