@@ -21,6 +21,7 @@ class DogCamAI():
   
   __thread: None
   __image: None
+  __lock: threading.Lock()
   
   def __init__(self, boundsSize=100, minimumConfidence=0.5, minimumThreshold=0.3):
     self.net = cv2.dnn.readNetFromDarknet("./training/coco.cfg", "./training/coco.weights")
@@ -42,14 +43,19 @@ class DogCamAI():
     
   def PushImage(self, image):
     if self.__image is None:
+      self.__lock.acquire(True)
       self.__image = image
+      self.__lock.release()
   
   def __Update(self):
     while self.RunningThread:
       if self.__image is not None:
-        self.__ProcessImage(self.__image)
+        self.__lock.acquire(True)
+        tmpImage = self.__image
         self.__image = None
-        
+        self.__lock.release()
+        self.__ProcessImage(tmpImage)
+      
       time.sleep(1)
   
   def Start(self):
@@ -62,6 +68,10 @@ class DogCamAI():
       self.__thread.join()
   
   def __ProcessImage(self, img):
+    # Unlikely, but we'll be safe anyways
+    if img is None:
+      return
+    
     blob = cv2.dnn.blobFromImage(img, 1 / 255.0, (416, 416), swapRB=True, crop=False)
     self.net.setInput(blob)
     layerOutputs = self.net.forward(self.ln)
