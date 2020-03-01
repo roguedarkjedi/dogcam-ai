@@ -6,6 +6,7 @@ class DogCamStreamer():
   __cap: None
   __img: None
   __thread: None
+  __lock: threading.Lock()
   
   __Running: False
   __Read: False
@@ -55,16 +56,22 @@ class DogCamStreamer():
 
       if self.__Read is True and time.time() - self.__LastReadTime >= 3.0:
         print("Capturing image")
+        self.__lock.acquire(True)
         self.__img = image
         self.__Read = False
         self.__LastErrorTime = 0
         self.__LastReadTime = time.time()
+        self.__lock.release()
   
   def Read(self):
-    if self.__img is not None:
+    self.__lock.acquire(True)
+    retImg = self.__img
+    self.__lock.release()
+    
+    if retImg is not None:
       self.__Read = True  
     
-    return self.__img
+    return retImg
   
   def Stop(self):
     self.__Running = False
