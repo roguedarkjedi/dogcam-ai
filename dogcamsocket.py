@@ -30,10 +30,10 @@ class DogCamSocket():
   def Disconnect(self):
     self.Processing = False
     
-    if self.__socket:
+    if self.__socket is not None:
       self.__socket.close()
     
-    if self.__thread:
+    if self.__thread is not None:
       self.__thread.join()
   
   def SendPosition(self, direction):
