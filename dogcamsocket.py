@@ -13,9 +13,6 @@ class DogCamSocket():
     self.URL = dest
     self.__socket = websocket.WebSocket()
     
-  def __del__(self):
-    self.Disconnect()
-    
   def Connect(self):
     try:
       self.__socket.connect(self.URL)
