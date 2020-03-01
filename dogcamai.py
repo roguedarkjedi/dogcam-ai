@@ -34,7 +34,7 @@ class DogCamAI():
     cv2.namedWindow("Output", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("Output", (320, 240))
     
-    self.__thread = threading.Thread(self.__Update)
+    self.__thread = threading.Thread(target=self.__Update)
     
   def __del__(self):
     self.Stop()
