@@ -17,7 +17,7 @@ class DogCamStreamer():
   vidURL: ""
   
   def __init__(self, inURL):
-	self.vidURL = inURL
+    self.vidURL = inURL
   
   def __del__(self):
     if self.__cap is not None:
@@ -31,34 +31,34 @@ class DogCamStreamer():
       return False
     
     self.resWidth, self.resHeight = self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH), self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-	return True
+    return True
     
   def Start(self):
-	if self.Open():
-		print("Starting thread")
-		self.__Running = True
-		self.__thread = threading.Thread(target=self.__Update, daemon=True)
-		self.__thread.start()
-		return True
+    if self.Open():
+      print("Starting thread")
+      self.__Running = True
+      self.__thread = threading.Thread(target=self.__Update, daemon=True)
+      self.__thread.start()
+      return True
 
-	return False
+    return False
     
   def __Update(self):
     while self.__Running:
       retVal, image  = self.__cap.read()
       
       if not retVal:
-		print("Detected error, waiting for fix")
+        print("Detected error, waiting for fix")
         if self.__LastErrorTime == 0:
           self.__LastErrorTime = time.time()
           
         if time.time() - self.__LastErrorTime >= 10.0:
-		  print("Time out has occurred!")
+          print("Time out has occurred!")
           self.__Running = False
           break
 
       if self.__Read is True and time.time() - self.__LastReadTime >= 3.0:
-	    print("Capturing image")
+        print("Capturing image")
         self.__img = image
         self.__Read = False
         self.__LastErrorTime = 0
