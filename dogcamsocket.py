@@ -40,23 +40,11 @@ class DogCamSocket():
     if self.Processing is False or self.__socket is None:
       print("Websocket is not connected!")
       return
-
-    lowDir = direction.lower()
-    angleDir = 10.0
+      
     JsonMessage = {
-      "action": "moverel",
+      "action": direction
       "source": "dogcamai"
     }
-    
-    if lowDir is "left" or lowDir is "right":
-      JsonMessage.update(servo="pan")
-      if lowDir is "left":
-        angleDir *= -1
-    else:
-      JsonMessage.update(servo="tilt")
-      if lowDir is "top":
-        angleDir *= -1      
-    JsonMessage.update(angle=angleDir)
     
     print("Sending new postion message")
     self.__socket.send(json.dumps(JsonMessage))
