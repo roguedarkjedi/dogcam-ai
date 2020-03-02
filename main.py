@@ -18,14 +18,13 @@ dcai = DogCamAI(boundsSize=dcc.AIBoundsSize,
 print("Starting command socket connection")
 dcso.Connect()
 
-print("Loading video feed")
 if dcs.Start():
   dcs.Resize(newWidth=300, newHeight=300)
   dcai.SetDimensions(dcs.resWidth, dcs.resHeight)
   dcai.Start()
   
   print("Starting main loop")
-  while True:
+  while dcs.Running():
     dcai.PushImage(dcs.Read())
     
     while dcai.commandQueue.empty() is False:

@@ -9,9 +9,8 @@ class DogCamStreamer():
   __lock = threading.RLock()
   
   __Running = False
-  __Read = True
-  __LastReadTime = 0
-  __LastErrorTime = 0
+  __LastReadTime = 0.0
+  __LastErrorTime = 0.0
   
   resWidth = 0
   resHeight = 0
@@ -25,19 +24,22 @@ class DogCamStreamer():
     self.netTimeout = disconnectionTimeout
   
   def Open(self):
+    print("Webstream: Loading video feed")
     self.__cap = cv2.VideoCapture(self.vidURL)
     if not self.__cap.isOpened():
-      print("Could not capture the video!")
+      print("Webstream: Could not capture the video!")
       self.__cap = None
       return False
     
-    self.resWidth = self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-    self.resHeight = self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    if self.resWidth is 0:
+      self.resWidth = self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    if self.resHeight is 0:
+      self.resHeight = self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     return True
     
   def Start(self):
     if self.Open():
-      print("Starting thread")
+      print("Webstream: Starting thread")
       self.__Running = True
       self.__thread = threading.Thread(target=self.__Update, daemon=True)
       self.__thread.start()
@@ -55,45 +57,81 @@ class DogCamStreamer():
       self.resHeight = newHeight
     else:
       self.resHeight = int(self.resHeight *percentage)
+  
+  def __ReleaseCapture(self):
+    if self.__cap is not None:
+      self.__cap.release()
+      self.__cap = None
+      
+  def __CheckTimeout(self):
+    hasHitTimeout = (time.time() - self.__LastErrorTime) >= self.netTimeout and self.__LastErrorTime > 0.0
+    if self.__cap is None or self.__cap.isOpened() is False or hasHitTimeout:
+      if hasHitTimeout:
+        print("Webstream: Timeout has occurred!")
+        self.__Running = False
+        self.__ReleaseCapture()
+        self.__BlankImage()
+        return False
+      else:
+        self.__SetError()
+        self.Open()
+        time.sleep(1)
+    return True
+
+  def __SetError(self):
+    if self.__LastErrorTime <= 1.0:
+      print("Webstream: Detected error, waiting...")
+      self.__LastErrorTime = time.time()
+      self.__BlankImage()
+      self.__ReleaseCapture()
+      
+  def __BlankImage(self):
+    print("Webstream: Blanking image")
+    self.__lock.acquire()
+    self.__img = None
+    self.__lock.release()
     
   def __Update(self):
-    while self.__Running:
+    while self.__Running:     
+      if self.__CheckTimeout() is False:
+        break
+      
+      if self.__cap is None:
+        self.__SetError()
+        continue
+
       retVal, image  = self.__cap.read()
       
       if not retVal:
-        print("Detected error, waiting for fix")
-        if self.__LastErrorTime == 0:
-          self.__LastErrorTime = time.time()
-          
-        if (time.time() - self.__LastErrorTime) >= self.netTimeout:
-          print("Time out has occurred!")
-          self.__Running = False
-          break
-
-      if self.__Read is True and (time.time() - self.__LastReadTime) >= self.captureRate:
-        print("Capturing image")
-        self.__lock.acquire()
+        self.__SetError()
+        continue
+      elif (time.time() - self.__LastReadTime) >= self.captureRate:
+        # If we cannot capture a lock, then don't capture the image
+        if self.__lock.acquire(False) is False:
+          continue
+        print("Webstream: Capturing image")
         self.__img = cv2.resize(image, (self.resWidth, self.resHeight))
-        self.__Read = False
         self.__LastReadTime = time.time()
-        self.__LastErrorTime = 0
         self.__lock.release()
+        if self.__LastErrorTime > 0.0:
+          print("Webstream: Recovered from net disruption")
+          self.__LastErrorTime = 0
   
   def Read(self):
     self.__lock.acquire(True)
     retImg = self.__img
     self.__lock.release()
     
-    if retImg is not None:
-      self.__Read = True
-    
     return retImg
   
+  def Running(self):
+    return self.__Running
+
   def Stop(self):
     self.__Running = False
+    self.__BlankImage()
     
     if self.__thread is not None:
       self.__thread.join()
 
-    if self.__cap is not None:
-      self.__cap.Release()
+    self.__ReleaseCapture()
