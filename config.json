@@ -6,7 +6,7 @@
   "CommandsAddress": "ws://192.168.50.169:5867/",
   
   "AIDisplayVision": false,
-  "AIBoundsSize": 20,
+  "AIBoundsSize": 40,
   "AIMinimumConfidence": 0.3,
   "AIDetectID": 18
 }
