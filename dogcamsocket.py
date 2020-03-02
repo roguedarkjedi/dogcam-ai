@@ -4,10 +4,10 @@ import time
 import json
 
 class DogCamSocket():
-  __socket: None
-  __thread: None
-  URL: ""
-  Processing: False
+  __socket = None
+  __thread = None
+  URL = ""
+  Processing = False
   
   def __init__(self, dest):
     self.URL = dest
@@ -22,7 +22,7 @@ class DogCamSocket():
       print("Interrupted!")
       raise
     except:
-      print("Failed to connect!")
+      print("Websocket failed to connect!")
       
   def Disconnect(self):
     self.Processing = False

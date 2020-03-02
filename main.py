@@ -2,7 +2,7 @@ from dogcamstreamer import DogCamStreamer
 from dogcamai import DogCamAI
 from dogcamsocket import DogCamSocket
 
-print("Starting streamer")
+print("Starting classes")
 dcs = DogCamStreamer("rtmp://192.168.50.4/camera/g")
 dcso = DogCamSocket("ws://192.168.50.169:5867/")
 dcai = DogCamAI()
@@ -10,7 +10,7 @@ dcai = DogCamAI()
 print("Starting socket connection")
 dcso.Connect()
 
-print("Loading feed")
+print("Loading video feed")
 if dcs.Start():
   dcai.SetDimensions(dcs.resWidth, dcs.resHeight)
   dcai.Start()

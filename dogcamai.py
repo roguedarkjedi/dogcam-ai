@@ -7,21 +7,21 @@ import queue
 DOG = 17
 
 class DogCamAI():
-  net: None
-  ln: None
-  width: 0
-  height: 0
-  bounds: 0
-  mConfidence: 0
-  mThreshold: 0
-  RunningThread: False
-  debugDisplay: False
+  net = None
+  ln = None
+  width = 0
+  height = 0
+  bounds = 0
+  mConfidence = 0
+  mThreshold = 0
+  RunningThread = False
+  debugDisplay = True
   
-  commandQueue: queue.Queue()
+  commandQueue = queue.Queue()
   
-  __thread: None
-  __image: None
-  __lock: threading.Lock()
+  __thread = None
+  __image = None
+  __lock = threading.Lock()
   
   def __init__(self, boundsSize=100, minimumConfidence=0.5, minimumThreshold=0.3):
     self.net = cv2.dnn.readNetFromDarknet("./training/coco.cfg", "./training/coco.weights")
@@ -30,6 +30,8 @@ class DogCamAI():
     self.bounds = boundsSize
     self.mConfidence = minimumConfidence
     self.mThreshold = minimumThreshold
+    self.__image = None
+    
     
     # Create Debug window
     cv2.namedWindow("Output", cv2.WINDOW_NORMAL)
@@ -42,19 +44,21 @@ class DogCamAI():
     self.height = int(H)
     
   def PushImage(self, image):
-    if self.__image is None:
-      self.__lock.acquire(True)
+    if self.__lock.acquire(False) is False:
+      return
+    
+    if self.__image is None and image is not None:
+      print("Got image to process")
       self.__image = image
-      self.__lock.release()
+    self.__lock.release()
   
   def __Update(self):
     while self.RunningThread:
       if self.__image is not None:
-        self.__lock.acquire(True)
-        tmpImage = self.__image
+        self.__lock.acquire()
+        self.__ProcessImage(self.__image)
         self.__image = None
         self.__lock.release()
-        self.__ProcessImage(tmpImage)
       
       time.sleep(1)
   
@@ -72,6 +76,7 @@ class DogCamAI():
     if img is None:
       return
     
+    print("Processing image!")
     blob = cv2.dnn.blobFromImage(img, 1 / 255.0, (416, 416), swapRB=True, crop=False)
     self.net.setInput(blob)
     layerOutputs = self.net.forward(self.ln)
@@ -101,7 +106,12 @@ class DogCamAI():
           boxes.append([x, y, int(width), int(height)])
           confidences.append(float(confidence))
     
+    if len(confidences) == 0:
+      print("Found nothing, exiting!")
+      return
+
     # Attempt to clean up detection
+    print("Cleaning up detection")
     idxs = cv2.dnn.NMSBoxes(boxes, confidences, self.mConfidence, self.mThreshold)
     
     if len(idxs) > 0:
@@ -127,4 +137,6 @@ class DogCamAI():
           self.commandQueue.put_nowait("top")
           
     if self.debugDisplay:
+      print("Displaying image")
       cv2.imshow("Output", img)
+    print("Image processed")

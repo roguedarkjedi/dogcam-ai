@@ -3,19 +3,19 @@ import threading
 import time
 
 class DogCamStreamer():
-  __cap: None
-  __img: None
-  __thread: None
-  __lock: threading.Lock()
+  __cap = None
+  __img = None
+  __thread = None
+  __lock = threading.RLock()
   
-  __Running: False
-  __Read: False
-  __LastReadTime: 0
-  __LastErrorTime: 0
+  __Running = False
+  __Read = True
+  __LastReadTime = 0
+  __LastErrorTime = 0
   
-  resWidth: 0
-  resHeight: 0
-  vidURL: ""
+  resWidth = 0
+  resHeight = 0
+  vidURL = ""
   
   def __init__(self, inURL):
     self.vidURL = inURL
@@ -49,34 +49,36 @@ class DogCamStreamer():
         if self.__LastErrorTime == 0:
           self.__LastErrorTime = time.time()
           
-        if time.time() - self.__LastErrorTime >= 10.0:
+        if (time.time() - self.__LastErrorTime) >= 10.0:
           print("Time out has occurred!")
           self.__Running = False
           break
 
-      if self.__Read is True and time.time() - self.__LastReadTime >= 3.0:
+      if self.__Read is True and (time.time() - self.__LastReadTime) >= 5.0:
         print("Capturing image")
-        self.__lock.acquire(True)
+        self.__lock.acquire()
         self.__img = image
         self.__Read = False
-        self.__LastErrorTime = 0
         self.__LastReadTime = time.time()
+        self.__LastErrorTime = 0
         self.__lock.release()
   
   def Read(self):
     self.__lock.acquire(True)
+    print("Pushing image")
     retImg = self.__img
     self.__lock.release()
     
     if retImg is not None:
-      self.__Read = True  
+      self.__Read = True
     
     return retImg
   
   def Stop(self):
     self.__Running = False
-    self.__thread.join()
     
-    time.sleep(1)
+    if self.__thread is not None:
+      self.__thread.join()
+
     if self.__cap is not None:
       self.__cap.Release()
