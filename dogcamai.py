@@ -24,14 +24,14 @@ class DogCamAI():
   
   def __init__(self, boundsSize=100, minimumConfidence=0.3, displayOut=False):
     #self.net = cv2.dnn.readNetFromDarknet("./training/coco-tiny.cfg", "./training/coco-tiny.weights")
-    self.net = cv2.dnn.readNetFromTensorflow("./training/mobilenet.pb", "./training/ssd_mobilenet_v2_coco_2018_03_29.pbtxt")
-    self.bounds = boundsSize
+    self.net = cv2.dnn.readNetFromTensorflow("./training/mobilenet.pb", "./training/mobilenet.pbtxt")
+    self.bounds = int(boundsSize)
     self.debugDisplay = displayOut
-    self.mConfidence = minimumConfidence
+    self.mConfidence = float(minimumConfidence)
     self.__image = None
 
     self.__thread = threading.Thread(target=self.__Update)
-    
+  
   def SetDimensions(self, W, H):
     self.width = int(W)
     self.height = int(H)
