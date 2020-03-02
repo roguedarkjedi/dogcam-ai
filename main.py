@@ -31,7 +31,8 @@ if dcs.Start():
       command = dcai.commandQueue.get_nowait()
       print(f"Got command: {command}")
       dcso.SendPosition(command)
-      
+
+print("Ending AI controller")
 dcs.Stop()
 dcai.Stop()
 dcso.Disconnect()
