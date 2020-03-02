@@ -4,12 +4,10 @@ import threading
 import time
 import queue
 
-# https://github.com/pjreddie/darknet/blob/master/data/coco.names
-DOG = 17
+DOG = 18
 
 class DogCamAI():
   net = None
-  ln = None
   width = 0
   height = 0
   bounds = 0
@@ -24,13 +22,12 @@ class DogCamAI():
   __image = None
   __lock = threading.Lock()
   
-  def __init__(self, boundsSize=100, minimumConfidence=0.25, minimumThreshold=0.3):
-    self.net = cv2.dnn.readNetFromDarknet("./training/coco-tiny.cfg", "./training/coco-tiny.weights")
-    self.ln = self.net.getLayerNames()
-    self.ln = [self.ln[i[0] - 1] for i in self.net.getUnconnectedOutLayers()]
+  def __init__(self, boundsSize=100, minimumConfidence=0.3, displayOut=False):
+    #self.net = cv2.dnn.readNetFromDarknet("./training/coco-tiny.cfg", "./training/coco-tiny.weights")
+    self.net = cv2.dnn.readNetFromTensorflow("./training/mobilenet.pb", "./training/ssd_mobilenet_v2_coco_2018_03_29.pbtxt")
     self.bounds = boundsSize
+    self.debugDisplay = displayOut
     self.mConfidence = minimumConfidence
-    self.mThreshold = minimumThreshold
     self.__image = None
 
     self.__thread = threading.Thread(target=self.__Update)
@@ -84,62 +81,31 @@ class DogCamAI():
       return
     
     print("Processing image!")
-    blob = cv2.dnn.blobFromImage(img, 1 / 255.0, (416, 416), swapRB=True, crop=False)
+    blob = cv2.dnn.blobFromImage(img, size=(300, 300), swapRB=True, crop=False)
     self.net.setInput(blob)
-    layerOutputs = self.net.forward(self.ln)
-    boxes = []
-    confidences = []
+    vision = self.net.forward()
     
     # Draw bounding box
     cv2.rectangle(img, (self.bounds, self.bounds), (self.width-self.bounds, self.height-self.bounds), (100,0,100), 20)
     
-    for output in layerOutputs:
-      for detection in output:
-        # pull data regarding the detection
-        scores = detection[5:]
-        classID = np.argmax(scores)
-        confidence = scores[classID]
-
-        # filter out weak predictions by ensuring the detected
-        # probability is greater than the minimum probability
-        #and classID == DOG
-        if confidence > self.mConfidence:
-          print(f"Found object {classID} with confidence {confidence}")
-          box = detection[0:4] * np.array([self.width, self.height, self.width, self.height])
-          (centerX, centerY, width, height) = box.astype("int")
-          x = int(centerX - (width / 2))
-          y = int(centerY - (height / 2))
-
-          boxes.append([x, y, int(width), int(height)])
-          confidences.append(float(confidence))
-    
-    if len(confidences) == 0:
-      if self.debugDisplay:
-        cv2.imshow("Output", img)
-      
-      print("Found nothing, exiting!")
-      return
-
-    # Attempt to clean up detection
-    print("Cleaning up detection")
-    idxs = cv2.dnn.NMSBoxes(boxes, confidences, self.mConfidence, self.mThreshold)
-    
-    if len(idxs) > 0:
-      # loop over the indexes we are keeping
-      for i in idxs.flatten():
-        # Get BB coordinates
-        (x, y) = (boxes[i][0], boxes[i][1])
-        (w, h) = (boxes[i][2], boxes[i][3])
+    for output in vision[0,0,:,:]:
+      classID = int(output[1])
+      confidence = float(output[2])
+ 
+      if confidence > self.mConfidence and classID == DOG:
+        print(f"Found object {classID} with confidence {confidence}")
+        box = output[3:7] * np.array([self.width, self.height, self.width, self.height])
+        (left, top, right, bottom) = box.astype("int")
         
-        cv2.rectangle(img, (x, y), (x+w, y+h), (100,25,0), 2)
+        cv2.rectangle(img, (left, top), (right, bottom), (100,25,0), 2)
 
-        if x < self.bounds:
+        if left < self.bounds:
           self.commandQueue.put_nowait("left")
-        elif x + w > self.width-self.bounds:
+        elif right > self.width-self.bounds:
           self.commandQueue.put_nowait("right")
-        if y < self.bounds:
+        if top < self.bounds:
           self.commandQueue.put_nowait("top")
-        elif y + h >= self.height-self.bounds:
+        elif bottom >= self.height-self.bounds:
           self.commandQueue.put_nowait("bottom")
           
     if self.debugDisplay:

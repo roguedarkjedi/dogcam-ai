@@ -40,9 +40,16 @@ class DogCamStreamer():
 
     return False
     
-  def Resize(self, percentage):
-    self.resWidth = int(self.resWidth * percentage)
-    self.resHeight = int(self.resHeight *percentage)
+  def Resize(self, percentage=1.0, newWidth=0, newHeight=0):
+    if newWidth != 0:
+      self.resWidth = newWidth
+    else:
+      self.resWidth = int(self.resWidth * percentage)
+    
+    if newHeight != 0:
+      self.resHeight = newHeight
+    else:
+      self.resHeight = int(self.resHeight *percentage)
     
   def __Update(self):
     while self.__Running:
