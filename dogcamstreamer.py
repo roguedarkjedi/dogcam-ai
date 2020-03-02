@@ -31,9 +31,9 @@ class DogCamStreamer():
       self.__cap = None
       return False
     
-    if self.resWidth is 0:
+    if self.resWidth == 0:
       self.resWidth = self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-    if self.resHeight is 0:
+    if self.resHeight == 0:
       self.resHeight = self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     return True
     
