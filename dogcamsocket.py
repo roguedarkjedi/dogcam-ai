@@ -16,13 +16,13 @@ class DogCamSocket():
   def Connect(self):
     try:
       self.__socket.connect(self.URL)
-      print("Socket connected!")
+      print("Websocket: Socket connected!")
       self.__OnConnected()
     except KeyboardInterrupt:
-      print("Interrupted!")
+      print("Websocket: Interrupted!")
       raise
     except:
-      print("Websocket failed to connect!")
+      print("Websocket: Failed to connect!")
       
   def Disconnect(self):
     self.Processing = False
@@ -35,7 +35,7 @@ class DogCamSocket():
   
   def SendPosition(self, direction):
     if self.Processing is False or self.__socket is None:
-      print("Websocket is not connected!")
+      print("Websocket: Not connected!")
       return
       
     JsonMessage = {
@@ -43,7 +43,7 @@ class DogCamSocket():
       "source": "dogcamai"
     }
     
-    print("Sending new postion message")
+    print("Websocket: Sending new postion message")
     self.__socket.send(json.dumps(JsonMessage))
   
   def __OnConnected(self):
@@ -60,10 +60,10 @@ class DogCamSocket():
           time.sleep(1)
           continue
           
-        print(f"Got message: {Message}")
+        print(f"Websocket: Got message: {Message}")
 
       except websocket.WebSocketConnectionClosedException:
-        print("Socket has been disconnected!")
+        print("Websocket: was disconnected!")
         # self.Connect()
         break
       except KeyboardInterrupt:

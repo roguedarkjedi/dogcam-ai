@@ -21,8 +21,7 @@ class DogCamAI():
   __image = None
   __lock = threading.Lock()
   
-  def __init__(self, boundsSize=100, minimumConfidence=0.3, displayOut=False, detectionID=18):
-    #self.net = cv2.dnn.readNetFromDarknet("./training/coco-tiny.cfg", "./training/coco-tiny.weights")
+  def __init__(self, boundsSize=100, minimumConfidence=0.3, displayOut=False, detectionID=0):
     self.net = cv2.dnn.readNetFromTensorflow("./training/mobilenet.pb", "./training/mobilenet.pbtxt")
     self.bounds = int(boundsSize)
     self.debugDisplay = displayOut
@@ -31,18 +30,19 @@ class DogCamAI():
     self.targetID = int(detectionID)
 
     self.__thread = threading.Thread(target=self.__Update)
+    print("AI: Initialized")
   
   def SetDimensions(self, W, H):
     self.width = int(W)
     self.height = int(H)
-    print(f"Resolution is {self.width}x{self.height}")
+    print(f"AI: Resolution is {self.width}x{self.height}")
     
   def PushImage(self, image):
     if self.__lock.acquire(False) is False:
       return
     
     if self.__image is None and image is not None:
-      print("Got image to process")
+      print("AI: Got image to process")
       self.__image = image
     self.__lock.release()
   
@@ -63,7 +63,7 @@ class DogCamAI():
       if self.debugDisplay:
         cv2.waitKey(1)
 
-      time.sleep(0.3)
+      time.sleep(0.2)
     cv2.destroyAllWindows()
   
   def Start(self):
@@ -80,7 +80,7 @@ class DogCamAI():
     if img is None:
       return
     
-    print("Processing image!")
+    print("AI: Processing image!")
     blob = cv2.dnn.blobFromImage(img, size=(300, 300), swapRB=True, crop=False)
     self.net.setInput(blob)
     vision = self.net.forward()
@@ -92,8 +92,8 @@ class DogCamAI():
       classID = int(output[1])
       confidence = float(output[2])
  
-      if confidence > self.mConfidence and classID == self.targetID:
-        print(f"Found object {classID} with confidence {confidence}")
+      if confidence > self.mConfidence and (self.targetID == 0 or classID == self.targetID):
+        print(f"AI: Found object {classID} with confidence {confidence}")
         box = output[3:7] * np.array([self.width, self.height, self.width, self.height])
         (left, top, right, bottom) = box.astype("int")
         
@@ -109,6 +109,6 @@ class DogCamAI():
           self.commandQueue.put_nowait("bottom")
           
     if self.debugDisplay:
-      print("Displaying image")
+      print("AI: Displaying image")
       cv2.imshow("Output", img)
-    print("Image processed")
+    print("AI: Image processed")
