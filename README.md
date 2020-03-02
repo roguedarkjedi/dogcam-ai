@@ -1,7 +1,9 @@
 # dogcam-ai
-The AI based camera controller for the dogcam project. This runs and detects the dog and attempts to keep him in focus. This is separate from the dogcam project due to the nature of how much processing power/resources this project will use due to the nature of it.
+The basic AI based camera controller for the overall dogcam project. This runs and detects the dog and attempts to keep him in focus.
 
-The end goal is to keep this running on a raspberry pi with relatively good detection rates. Currently, this detects [all of these objects](https://github.com/tensorflow/models/blob/master/research/object_detection/data/mscoco_label_map.pbtxt).
+This is separate from the dogcam project due to the nature of how much processing power/resources this project will use because of computer vision and detection.
+
+The end goal is to keep this running on a raspberry pi with relatively good detection rates. Currently, this detects [all of these objects](https://github.com/tensorflow/models/blob/master/research/object_detection/data/mscoco_label_map.pbtxt), but filters out any results to the given ID.
 
 There's a few faults to this program:
 
