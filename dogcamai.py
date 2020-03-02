@@ -4,8 +4,6 @@ import threading
 import time
 import queue
 
-DOG = 18
-
 class DogCamAI():
   net = None
   width = 0
@@ -15,6 +13,7 @@ class DogCamAI():
   mThreshold = 0
   RunningThread = False
   debugDisplay = False
+  targetID = 0
   
   commandQueue = queue.Queue()
   
@@ -22,13 +21,14 @@ class DogCamAI():
   __image = None
   __lock = threading.Lock()
   
-  def __init__(self, boundsSize=100, minimumConfidence=0.3, displayOut=False):
+  def __init__(self, boundsSize=100, minimumConfidence=0.3, displayOut=False, detectionID=18):
     #self.net = cv2.dnn.readNetFromDarknet("./training/coco-tiny.cfg", "./training/coco-tiny.weights")
     self.net = cv2.dnn.readNetFromTensorflow("./training/mobilenet.pb", "./training/mobilenet.pbtxt")
     self.bounds = int(boundsSize)
     self.debugDisplay = displayOut
     self.mConfidence = float(minimumConfidence)
     self.__image = None
+    self.targetID = int(detectionID)
 
     self.__thread = threading.Thread(target=self.__Update)
   
@@ -92,7 +92,7 @@ class DogCamAI():
       classID = int(output[1])
       confidence = float(output[2])
  
-      if confidence > self.mConfidence and classID == DOG:
+      if confidence > self.mConfidence and classID == self.targetID:
         print(f"Found object {classID} with confidence {confidence}")
         box = output[3:7] * np.array([self.width, self.height, self.width, self.height])
         (left, top, right, bottom) = box.astype("int")

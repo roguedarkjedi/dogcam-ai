@@ -7,5 +7,6 @@
   
   "AIDisplayVision": false,
   "AIBoundsSize": 20,
-  "AIMinimumConfidence": 0.3
+  "AIMinimumConfidence": 0.3,
+  "AIDetectID": 18
 }
