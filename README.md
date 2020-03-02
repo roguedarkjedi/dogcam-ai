@@ -10,3 +10,4 @@ There's a few faults to this program:
 * No methods of reconnection on failure or disconnection for the command server
 * Better training models with small focused data sets would be of better usage. Until a better model is created, it still uses [mobilessd from tensorflow](https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API)
 * No video stream loss detection, might be a limitation of OpenCV
+* The logging is a bit much.
