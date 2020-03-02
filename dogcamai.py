@@ -4,6 +4,7 @@ import threading
 import time
 import queue
 
+# https://github.com/pjreddie/darknet/blob/master/data/coco.names
 DOG = 17
 
 class DogCamAI():
@@ -15,7 +16,7 @@ class DogCamAI():
   mConfidence = 0
   mThreshold = 0
   RunningThread = False
-  debugDisplay = True
+  debugDisplay = False
   
   commandQueue = queue.Queue()
   
@@ -23,25 +24,21 @@ class DogCamAI():
   __image = None
   __lock = threading.Lock()
   
-  def __init__(self, boundsSize=100, minimumConfidence=0.5, minimumThreshold=0.3):
-    self.net = cv2.dnn.readNetFromDarknet("./training/coco.cfg", "./training/coco.weights")
+  def __init__(self, boundsSize=100, minimumConfidence=0.25, minimumThreshold=0.3):
+    self.net = cv2.dnn.readNetFromDarknet("./training/coco-tiny.cfg", "./training/coco-tiny.weights")
     self.ln = self.net.getLayerNames()
     self.ln = [self.ln[i[0] - 1] for i in self.net.getUnconnectedOutLayers()]
     self.bounds = boundsSize
     self.mConfidence = minimumConfidence
     self.mThreshold = minimumThreshold
     self.__image = None
-    
-    
-    # Create Debug window
-    cv2.namedWindow("Output", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Output", (320, 240))
-    
+
     self.__thread = threading.Thread(target=self.__Update)
     
   def SetDimensions(self, W, H):
     self.width = int(W)
     self.height = int(H)
+    print(f"Resolution is {self.width}x{self.height}")
     
   def PushImage(self, image):
     if self.__lock.acquire(False) is False:
@@ -53,6 +50,12 @@ class DogCamAI():
     self.__lock.release()
   
   def __Update(self):
+    # Create Debug window
+    if self.debugDisplay:
+      cv2.startWindowThread()
+      cv2.namedWindow("Output", cv2.WINDOW_NORMAL)
+      cv2.resizeWindow("Output", (320, 240))
+    
     while self.RunningThread:
       if self.__image is not None:
         self.__lock.acquire()
@@ -60,7 +63,11 @@ class DogCamAI():
         self.__image = None
         self.__lock.release()
       
-      time.sleep(1)
+      if self.debugDisplay:
+        cv2.waitKey(1)
+
+      time.sleep(0.3)
+    cv2.destroyAllWindows()
   
   def Start(self):
     self.RunningThread = True
@@ -107,6 +114,9 @@ class DogCamAI():
           confidences.append(float(confidence))
     
     if len(confidences) == 0:
+      if self.debugDisplay:
+        cv2.imshow("Output", img)
+      
       print("Found nothing, exiting!")
       return
 
@@ -121,20 +131,16 @@ class DogCamAI():
         (x, y) = (boxes[i][0], boxes[i][1])
         (w, h) = (boxes[i][2], boxes[i][3])
         
-        cv2.rectangle(img, (x, y), (x+w, y+h), (100,0,0), 2)
+        cv2.rectangle(img, (x, y), (x+w, y+h), (100,25,0), 2)
 
-        # Check Left
         if x < self.bounds:
           self.commandQueue.put_nowait("left")
-        # Check Right
         elif x + w > self.width-self.bounds:
           self.commandQueue.put_nowait("right")
-        # Check Bottom
         if y < self.bounds:
-          self.commandQueue.put_nowait("bottom")
-        # Check Top
-        elif y + h >= self.height-self.bounds:
           self.commandQueue.put_nowait("top")
+        elif y + h >= self.height-self.bounds:
+          self.commandQueue.put_nowait("bottom")
           
     if self.debugDisplay:
       print("Displaying image")
