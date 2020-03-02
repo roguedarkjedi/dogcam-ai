@@ -16,9 +16,13 @@ class DogCamStreamer():
   resWidth = 0
   resHeight = 0
   vidURL = ""
+  captureRate=0.0
+  netTimeout=0.0
   
-  def __init__(self, inURL):
+  def __init__(self, inURL, timeBetweenCaptures=5.0, disconnectionTimeout=10.0):
     self.vidURL = inURL
+    self.captureRate = timeBetweenCaptures
+    self.netTimeout = disconnectionTimeout
   
   def Open(self):
     self.__cap = cv2.VideoCapture(self.vidURL)
@@ -27,7 +31,8 @@ class DogCamStreamer():
       self.__cap = None
       return False
     
-    self.resWidth, self.resHeight = self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH), self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    self.resWidth = self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    self.resHeight = self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     return True
     
   def Start(self):
@@ -60,12 +65,12 @@ class DogCamStreamer():
         if self.__LastErrorTime == 0:
           self.__LastErrorTime = time.time()
           
-        if (time.time() - self.__LastErrorTime) >= 10.0:
+        if (time.time() - self.__LastErrorTime) >= self.netTimeout:
           print("Time out has occurred!")
           self.__Running = False
           break
 
-      if self.__Read is True and (time.time() - self.__LastReadTime) >= 5.0:
+      if self.__Read is True and (time.time() - self.__LastReadTime) >= self.captureRate:
         print("Capturing image")
         self.__lock.acquire()
         self.__img = cv2.resize(image, (self.resWidth, self.resHeight))
