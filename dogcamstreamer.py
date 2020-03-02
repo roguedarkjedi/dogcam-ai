@@ -65,7 +65,6 @@ class DogCamStreamer():
   
   def Read(self):
     self.__lock.acquire(True)
-    print("Pushing image")
     retImg = self.__img
     self.__lock.release()
     

@@ -19,10 +19,12 @@ if dcs.Start():
   while True:
     dcai.PushImage(dcs.Read())
     
-    while not dcai.commandQueue.empty():
+    while dcai.commandQueue.empty() is False:
       command = dcai.commandQueue.get_nowait()
       print(f"Got command: {command}")
       dcso.SendPosition(command)
+    
+    time.sleep(1)
       
 dcs.Stop()
 dcai.Stop()
