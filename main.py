@@ -1,13 +1,20 @@
 from dogcamstreamer import DogCamStreamer
 from dogcamai import DogCamAI
 from dogcamsocket import DogCamSocket
+from dogcamconfig import DogCamConfig
 
 print("Starting classes")
-dcs = DogCamStreamer("rtmp://192.168.50.4/camera/g")
-dcso = DogCamSocket("ws://192.168.50.169:5867/")
-dcai = DogCamAI(boundsSize=25, displayOut=False)
+dcc = DogCamConfig()
+dcs = DogCamStreamer(dcc.StreamingURL, 
+  timeBetweenCaptures=dcc.StreamingCaptureRate, 
+  disconnectionTimeout=dcc.StreamingTimeout)
+dcso = DogCamSocket(dcc.CommandsAddress)
 
-print("Starting socket connection")
+dcai = DogCamAI(boundsSize=dcc.AIBoundsSize, 
+  minimumConfidence=dcc.AIMinimumConfidence, 
+  displayOut=dcc.AIDisplayVision)
+
+print("Starting command socket connection")
 dcso.Connect()
 
 print("Loading video feed")
