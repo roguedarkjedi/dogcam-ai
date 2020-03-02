@@ -57,7 +57,7 @@ class DogCamSocket():
       try:
         Message = self.__socket.recv()
         if not Message:
-          time.sleep(2)
+          time.sleep(1)
           continue
           
         print(f"Got message: {Message}")
@@ -69,5 +69,5 @@ class DogCamSocket():
       except KeyboardInterrupt:
         break
 
-      time.sleep(2)
+      time.sleep(0.5)
   
