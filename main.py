@@ -12,6 +12,7 @@ dcso.Connect()
 
 print("Loading video feed")
 if dcs.Start():
+  dcs.Resize(0.5)
   dcai.SetDimensions(dcs.resWidth, dcs.resHeight)
   dcai.Start()
   
@@ -23,8 +24,6 @@ if dcs.Start():
       command = dcai.commandQueue.get_nowait()
       print(f"Got command: {command}")
       dcso.SendPosition(command)
-    
-    time.sleep(1)
       
 dcs.Stop()
 dcai.Stop()

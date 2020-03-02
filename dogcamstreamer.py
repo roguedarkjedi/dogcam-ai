@@ -40,6 +40,10 @@ class DogCamStreamer():
 
     return False
     
+  def Resize(self, percentage):
+    self.resWidth = int(self.resWidth * percentage)
+    self.resHeight = int(self.resHeight *percentage)
+    
   def __Update(self):
     while self.__Running:
       retVal, image  = self.__cap.read()
@@ -57,7 +61,7 @@ class DogCamStreamer():
       if self.__Read is True and (time.time() - self.__LastReadTime) >= 5.0:
         print("Capturing image")
         self.__lock.acquire()
-        self.__img = image
+        self.__img = cv2.resize(image, (self.resWidth, self.resHeight))
         self.__Read = False
         self.__LastReadTime = time.time()
         self.__LastErrorTime = 0
