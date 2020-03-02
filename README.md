@@ -6,8 +6,5 @@ The end goal is to keep this running on a raspberry pi with relatively good dete
 There's a few faults to this program:
 
 * No methods of reconnection on failure or disconnection (there is a video feed staller, but the websocket does not believe in reconnecting)
-* This does nothing if the dog is not in frame other than generally waste cycles. Early out filtering would be better.
-* Better training models with small focused data sets would be of better usage. Until a better model is created, it still uses [COCO trained by darknet](https://pjreddie.com/darknet/yolo/)
-* It borrows a lot of code detection from the YOLO post [found here](https://www.pyimagesearch.com/2018/11/12/yolo-object-detection-with-opencv/).
-* A lot of this is generally untested outside of the test.py file.
-* Lack of prints and debug sequences.
+* Better training models with small focused data sets would be of better usage. Until a better model is created, it still uses [mobilessd from tensorflow](https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API)
+* No video stream loss detection, might be a limitation of OpenCV
