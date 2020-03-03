@@ -6,15 +6,23 @@ import json
 class DogCamSocket():
   __socket = None
   __thread = None
+  __processing = False
+  __reconnect = False
   URL = ""
-  Processing = False
   
   def __init__(self, dest):
     self.URL = dest
-    self.__socket = websocket.WebSocket()
     
   def Connect(self):
+    self.__reconnect = False
     try:
+      self.__socket.close()
+      self.__socket = None
+    except:
+      print("Websocket: Socket constructing")
+    
+    try:
+      self.__socket = websocket.WebSocket()
       self.__socket.connect(self.URL)
       print("Websocket: Socket connected!")
       self.__OnConnected()
@@ -23,18 +31,22 @@ class DogCamSocket():
       raise
     except:
       print("Websocket: Failed to connect!")
+      self.__socket = None
+      self.__reconnect = True
       
   def Disconnect(self):
-    self.Processing = False
+    self.__processing = False
+    self.__reconnect = False
     
     if self.__socket is not None:
       self.__socket.close()
+      self.__socket = None
     
     if self.__thread is not None:
       self.__thread.join()
-  
+
   def SendPosition(self, direction):
-    if self.Processing is False or self.__socket is None:
+    if self.__processing is False or self.__socket is None or self.__reconnect is True:
       print("Websocket: Not connected!")
       return
       
@@ -47,13 +59,22 @@ class DogCamSocket():
     self.__socket.send(json.dumps(JsonMessage))
   
   def __OnConnected(self):
-    self.Processing = True
+    self.__processing = True
     if self.__thread is None:
       self.__thread = threading.Thread(target=self.__MessageThread, daemon=True, name="WSThread")
       self.__thread.start()
   
   def __MessageThread(self):
-    while self.Processing:
+    while self.__processing:
+      
+      # Attempt to handle reconnection
+      if self.__socket is None:
+        if self.__reconnect is True:
+          self.Connect()
+          
+        time.sleep(2)
+        continue
+      
       try:
         Message = self.__socket.recv()
         if not Message:
@@ -64,8 +85,8 @@ class DogCamSocket():
 
       except websocket.WebSocketConnectionClosedException:
         print("Websocket: was disconnected!")
-        # self.Connect()
-        break
+        self.Connect()
+        continue
       except KeyboardInterrupt:
         break
 
