@@ -8,12 +8,15 @@ class DogCamSocket():
   __thread = None
   __processing = False
   __reconnect = False
+  __reconnectTimeout = 0.0
+  __maxTimeout = 0.0
   URL = ""
   
-  def __init__(self, dest):
+  def __init__(self, dest, MaxTimeout=120.0):
+    self.__maxTimeout = float(MaxTimeout)
     self.URL = dest
     
-  def Connect(self):
+  def Connect(self):     
     self.__reconnect = False
     try:
       self.__socket.close()
@@ -60,6 +63,7 @@ class DogCamSocket():
   
   def __OnConnected(self):
     self.__processing = True
+    self.__reconnectTimeout = 0.0
     if self.__thread is None:
       self.__thread = threading.Thread(target=self.__MessageThread, daemon=True, name="WSThread")
       self.__thread.start()
@@ -69,6 +73,17 @@ class DogCamSocket():
       
       # Attempt to handle reconnection
       if self.__socket is None:
+        
+        # Handle timeouts
+        if self.__reconnectTimeout == 0.0:
+          print("Websocket: Detected disconnection")
+          self.__reconnectTimeout = time.time()
+          self.__reconnect = True
+        elif (time.time() - self.__reconnectTimeout) >= self.__maxTimeout:
+          print("Websocket: Exhausted retries to reconnect")
+          self.__processing = False
+          break
+        
         if self.__reconnect is True:
           self.Connect()
           
@@ -85,7 +100,7 @@ class DogCamSocket():
 
       except websocket.WebSocketConnectionClosedException:
         print("Websocket: was disconnected!")
-        self.Connect()
+        self.__socket = None
         continue
       except KeyboardInterrupt:
         break
