@@ -5,30 +5,40 @@ import time
 import queue
 
 class DogCamAI():
-  net = None
-  width = 0
-  height = 0
-  bounds = 0
-  mConfidence = 0
-  mThreshold = 0
-  RunningThread = False
   debugDisplay = False
-  targetID = 0
 
+  # Queue of movement commands necessary for the robot.
+  # The main file handles the interclass processing of these commands.
   commandQueue = queue.Queue()
-  
+
+  # OpenCV AI network
+  __net = None
+  # The thread object
   __thread = None
+  # The current image to display
   __image = None
+  # Our thread locks for pushing in images to work with
   __lock = threading.Lock()
+  # Sync time rate with displays using OpenCV
   __fpsSyncTime = 1
+  # Width of the image to process
+  __width = 0
+  # Height of the image to process
+  __height = 0
+  # Thickness of the borders
+  __bounds = 0
+  # Thread flags
+  __runningThread = False
+  # AI Confidence levels
+  __minConfidence = 0
   
   def __init__(self, boundsSize=100, minimumConfidence=0.3, displayOut=False, detectionID=0, fpsSync=0):
-    self.net = cv2.dnn.readNetFromTensorflow("./training/mobilenet.pb", "./training/mobilenet.pbtxt")
-    self.bounds = int(boundsSize)
+    self.__net = cv2.dnn.readNetFromTensorflow("./training/mobilenet.pb", "./training/mobilenet.pbtxt")
     self.debugDisplay = displayOut
-    self.mConfidence = float(minimumConfidence)
+    self.__bounds = int(boundsSize)
+    self.__minConfidence = float(minimumConfidence)
     self.__image = None
-    self.targetID = int(detectionID)
+    self.__targetID = int(detectionID)
     
     if int(fpsSync) > 0:
       # cv2 waitKey is in ms
@@ -38,9 +48,9 @@ class DogCamAI():
     print("AI: Initialized")
   
   def SetDimensions(self, W, H):
-    self.width = int(W)
-    self.height = int(H)
-    print(f"AI: Resolution is {self.width}x{self.height}")
+    self.__width = int(W)
+    self.__height = int(H)
+    print(f"AI: Resolution is {self.__width}x{self.__height}")
     
   def PushImage(self, image):
     if self.__lock.acquire(False) is False:
@@ -58,7 +68,7 @@ class DogCamAI():
       cv2.namedWindow("Output", cv2.WINDOW_NORMAL)
       cv2.resizeWindow("Output", (320, 240))
     
-    while self.RunningThread:
+    while self.__runningThread:
       if self.__image is not None:
         self.__lock.acquire()
         self.__ProcessImage(self.__image)
@@ -72,12 +82,12 @@ class DogCamAI():
     cv2.destroyAllWindows()
   
   def Start(self):
-    self.RunningThread = True
+    self.__runningThread = True
     self.__thread.start()
   
   def Stop(self):
-    if self.RunningThread:
-      self.RunningThread = False
+    if self.__runningThread:
+      self.__runningThread = False
       self.__thread.join()
   
   def __ProcessImage(self, img):
@@ -87,30 +97,30 @@ class DogCamAI():
     
     print("AI: Processing image!")
     blob = cv2.dnn.blobFromImage(img, size=(300, 300), swapRB=True, crop=False)
-    self.net.setInput(blob)
-    vision = self.net.forward()
+    self.__net.setInput(blob)
+    vision = self.__net.forward()
     
     # Draw bounding box
-    cv2.rectangle(img, (self.bounds, self.bounds), (self.width-self.bounds, self.height-self.bounds), (100,0,100), 20)
+    cv2.rectangle(img, (self.__bounds, self.__bounds), (self.__width-self.__bounds, self.__height-self.__bounds), (100,0,100), 20)
     
     for output in vision[0,0,:,:]:
       classID = int(output[1])
       confidence = float(output[2])
  
-      if confidence > self.mConfidence and (self.targetID == 0 or classID == self.targetID):
+      if confidence > self.__minConfidence and (self.__targetID == 0 or classID == self.__targetID):
         print(f"AI: Found object {classID} with confidence {confidence}")
-        box = output[3:7] * np.array([self.width, self.height, self.width, self.height])
+        box = output[3:7] * np.array([self.__width, self.__height, self.__width, self.__height])
         (left, top, right, bottom) = box.astype("int")
         
         cv2.rectangle(img, (left, top), (right, bottom), (100,25,0), 2)
 
-        if left < self.bounds:
+        if left < self.__bounds:
           self.commandQueue.put_nowait("left")
-        elif right > self.width-self.bounds:
+        elif right > self.__width-self.__bounds:
           self.commandQueue.put_nowait("right")
-        if top < self.bounds:
+        if top < self.__bounds:
           self.commandQueue.put_nowait("top")
-        elif bottom >= self.height-self.bounds:
+        elif bottom >= self.__height-self.__bounds:
           self.commandQueue.put_nowait("bottom")
           
     if self.debugDisplay:
