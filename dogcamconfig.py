@@ -7,4 +7,3 @@ class DogCamConfig():
       ConfigData = json.load(cfg_file)
       self.__dict__ = ConfigData
       print("Config data has been loaded!")
-			
