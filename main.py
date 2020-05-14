@@ -7,7 +7,8 @@ print("Starting classes")
 dcc = DogCamConfig()
 dcs = DogCamStreamer(dcc.StreamingURL, 
   timeBetweenCaptures=dcc.StreamingCaptureRate, 
-  disconnectionTimeout=dcc.StreamingTimeout)
+  disconnectionTimeout=dcc.StreamingTimeout, 
+  frameBufferSize=dcc.StreamingFrameBufferSize)
 
 dcso = DogCamSocket(dcc.CommandsAddress, MaxTimeout=dcc.CommandsTimeout)
 
