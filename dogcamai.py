@@ -14,20 +14,25 @@ class DogCamAI():
   RunningThread = False
   debugDisplay = False
   targetID = 0
-  
+
   commandQueue = queue.Queue()
   
   __thread = None
   __image = None
   __lock = threading.Lock()
+  __fpsSyncTime = 1
   
-  def __init__(self, boundsSize=100, minimumConfidence=0.3, displayOut=False, detectionID=0):
+  def __init__(self, boundsSize=100, minimumConfidence=0.3, displayOut=False, detectionID=0, fpsSync=0):
     self.net = cv2.dnn.readNetFromTensorflow("./training/mobilenet.pb", "./training/mobilenet.pbtxt")
     self.bounds = int(boundsSize)
     self.debugDisplay = displayOut
     self.mConfidence = float(minimumConfidence)
     self.__image = None
     self.targetID = int(detectionID)
+    
+    if int(fpsSync) > 0:
+      # cv2 waitKey is in ms
+      self.__fpsSyncTime = ((1/fpsSync) * 1000)
 
     self.__thread = threading.Thread(target=self.__Update)
     print("AI: Initialized")
@@ -61,7 +66,7 @@ class DogCamAI():
         self.__lock.release()
       
       if self.debugDisplay:
-        cv2.waitKey(1)
+        cv2.waitKey(self.__fpsSyncTime)
 
       time.sleep(0.2)
     cv2.destroyAllWindows()

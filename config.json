@@ -3,6 +3,7 @@
   "StreamingCaptureRate": 2.0,
   "StreamingFrameBufferSize": 5,
   "StreamingTimeout": 40.0,
+  "StreamingFPS": 20.0,
   
   "CommandsAddress": "ws://192.168.50.169:5867/",
   "CommandsTimeout": 120.0,
