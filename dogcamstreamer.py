@@ -35,7 +35,7 @@ class DogCamStreamer():
 
     # Keep only a few frames in the buffer, dropping dead frames
     self.__cap.set(cv2.CAP_PROP_BUFFERSIZE, self.fbSize)
- 
+
     if not self.__cap.isOpened():
       print("Webstream: Could not capture the video!")
       self.__cap = None
@@ -72,7 +72,7 @@ class DogCamStreamer():
     if self.__cap is not None:
       self.__cap.release()
       self.__cap = None
- 
+
   def __CheckTimeout(self):
     hasHitTimeout = (time.time() - self.__LastErrorTime) >= self.netTimeout and self.__LastErrorTime > 0.0
     if self.__cap is None or self.__cap.isOpened() is False or hasHitTimeout:
