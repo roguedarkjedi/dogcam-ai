@@ -15,15 +15,19 @@ class DogCamStreamer():
   resWidth = 0
   resHeight = 0
   fbSize = 0
+  fpsRate = 0.0
   vidURL = ""
   captureRate=0.0
   netTimeout=0.0
   
-  def __init__(self, inURL, timeBetweenCaptures=5.0, disconnectionTimeout=10.0, frameBufferSize=5):
+  def __init__(self, inURL, timeBetweenCaptures=5.0, disconnectionTimeout=10.0, frameBufferSize=5, videoFPS=0.0):
     self.vidURL = inURL
     self.captureRate = timeBetweenCaptures
     self.netTimeout = disconnectionTimeout
     self.fbSize = frameBufferSize
+    
+    if videoFPS >= 1.0:
+      self.fpsRate=(1/videoFPS)
   
   def Open(self):
     print("Webstream: Loading video feed")
@@ -90,13 +94,18 @@ class DogCamStreamer():
       self.__LastErrorTime = time.time()
       self.__BlankImage()
       self.__ReleaseCapture()
-      
+
   def __BlankImage(self):
     print("Webstream: Blanking image")
     self.__lock.acquire()
     self.__img = None
     self.__lock.release()
-    
+
+  # Easy function to just sleep appropriately
+  def __FPSSync(self):
+    if self.fpsRate > 0.0:
+      time.sleep(self.fpsRate)
+
   def __Update(self):
     while self.__Running:     
       if self.__CheckTimeout() is False:
@@ -104,16 +113,19 @@ class DogCamStreamer():
       
       if self.__cap is None:
         self.__SetError()
+        self.__FPSSync()
         continue
 
       retVal, image  = self.__cap.read()
       
       if not retVal:
         self.__SetError()
+        self.__FPSSync()
         continue
       elif (time.time() - self.__LastReadTime) >= self.captureRate:
         # If we cannot capture a lock, then don't capture the image
         if self.__lock.acquire(False) is False:
+          self.__FPSSync()
           continue
         print("Webstream: Capturing image")
         self.__img = cv2.resize(image, (self.resWidth, self.resHeight))
@@ -122,12 +134,14 @@ class DogCamStreamer():
         if self.__LastErrorTime > 0.0:
           print("Webstream: Recovered from net disruption")
           self.__LastErrorTime = 0
+
+      self.__FPSSync()
   
   def Read(self):
     self.__lock.acquire(True)
     retImg = self.__img
     self.__lock.release()
-    
+
     return retImg
   
   def Running(self):
