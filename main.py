@@ -8,7 +8,8 @@ dcc = DogCamConfig()
 dcs = DogCamStreamer(dcc.StreamingURL, 
   timeBetweenCaptures=dcc.StreamingCaptureRate, 
   disconnectionTimeout=dcc.StreamingTimeout, 
-  frameBufferSize=dcc.StreamingFrameBufferSize)
+  frameBufferSize=dcc.StreamingFrameBufferSize,
+  videoFPS=dcc.StreamingFPS)
 
 dcso = DogCamSocket(dcc.CommandsAddress, MaxTimeout=dcc.CommandsTimeout)
 
