@@ -14,18 +14,24 @@ class DogCamStreamer():
   
   resWidth = 0
   resHeight = 0
+  fbSize = 0
   vidURL = ""
   captureRate=0.0
   netTimeout=0.0
   
-  def __init__(self, inURL, timeBetweenCaptures=5.0, disconnectionTimeout=10.0):
+  def __init__(self, inURL, timeBetweenCaptures=5.0, disconnectionTimeout=10.0, frameBufferSize=5):
     self.vidURL = inURL
     self.captureRate = timeBetweenCaptures
     self.netTimeout = disconnectionTimeout
+    self.fbSize = frameBufferSize
   
   def Open(self):
     print("Webstream: Loading video feed")
     self.__cap = cv2.VideoCapture(self.vidURL)
+    
+    # Keep only a few frames in the buffer, dropping dead frames
+    self.__cap.set(cv2.CAP_PROP_BUFFERSIZE, self.fbSize)
+    
     if not self.__cap.isOpened():
       print("Webstream: Could not capture the video!")
       self.__cap = None
