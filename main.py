@@ -16,7 +16,8 @@ dcso = DogCamSocket(dcc.CommandsAddress, MaxTimeout=dcc.CommandsTimeout)
 dcai = DogCamAI(boundsSize=dcc.AIBoundsSize, 
   minimumConfidence=dcc.AIMinimumConfidence, 
   displayOut=dcc.AIDisplayVision,
-  detectionID=dcc.AIDetectID)
+  detectionID=dcc.AIDetectID,
+  fpsSync=dcc.StreamingFPS)
 
 print("Starting command socket connection")
 dcso.Connect()
