@@ -60,14 +60,14 @@ class DogCamSocket():
 
     print("Websocket: Sending new postion message")
     self.__socket.send(json.dumps(JsonMessage))
-  
+
   def __OnConnected(self):
     self.__processing = True
     self.__reconnectTimeout = 0.0
     if self.__thread is None:
       self.__thread = threading.Thread(target=self.__MessageThread, daemon=True, name="WSThread")
       self.__thread.start()
-  
+
   def __MessageThread(self):
     while self.__processing:
 
