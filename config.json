@@ -1,6 +1,7 @@
 {
   "StreamingURL": "rtmp://192.168.50.4/camera/g",
   "StreamingCaptureRate": 2.0,
+  "StreamingFrameBufferSize": 5,
   "StreamingTimeout": 40.0,
   
   "CommandsAddress": "ws://192.168.50.169:5867/",
