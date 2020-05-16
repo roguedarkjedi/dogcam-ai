@@ -46,6 +46,12 @@ class DogCamLogger():
     return f"[{NowTime}] "
 
   @staticmethod
+  def SetLogLevel(NewLevel:str):
+    global CurrentLoggingLevel
+
+    CurrentLoggingLevel = DCLogLevel.GetLevel(NewLevel.title())
+
+  @staticmethod
   def Log(Input:str, LogLevel:DCLogLevel=DCLogLevel.Log, MakeBold:bool=False, MakeDim:bool=False):
     if LogLevel < CurrentLoggingLevel:
       return
