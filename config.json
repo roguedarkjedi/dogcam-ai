@@ -1,14 +1,14 @@
 {
   "StreamingURL": "rtmp://192.168.50.4/camera/g",
-  "StreamingCaptureRate": 0.25,
+  "StreamingCaptureRate": 0.3,
   "StreamingFrameBufferSize": 2,
   "StreamingTimeout": 30.0,
-  "StreamingFPS": 30.0,
+  "StreamingFPS": 20.0,
   
   "CommandsAddress": "ws://192.168.50.169:5867/",
   "CommandsTimeout": 50.0,
   
-  "AIDisplayVision": true,
+  "AIDisplayVision": false,
   "AIBoundsSize": 15,
   "AIMinimumConfidence": 0.4,
   "AIDetectID": 18,
