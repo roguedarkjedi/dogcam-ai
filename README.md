@@ -15,6 +15,13 @@ The end goal is to keep this running on a raspberry pi with relatively good dete
 * Mostly configurable
 * Logging spew control
 
+## Install:
+---------------
+1. Grab the OpenCV libraries [from here](https://github.com/dlime/Faster_OpenCV_4_Raspberry_Pi)
+2. Install all the required modules `python3 -m pip install --upgrade -r requirements.txt`
+3. Change values in the config.json
+4. Run main.py
+
 ## Caveats:
 ---------------
 * Better training models with small focused data sets would be of better usage. Until a better model is created, it still uses [mobilessd from tensorflow](https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API)
