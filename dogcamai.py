@@ -1,9 +1,9 @@
 from dogcamlogger import DogCamLogger, DCLogLevel
-import cv2
 import numpy as np
 import threading
 import time
 import queue
+import cv2
 
 class DogCamAI():
   debugDisplay = False
@@ -82,7 +82,7 @@ class DogCamAI():
     while self.__runningThread:
       if self.__image is not None:
         self.__lock.acquire()
-        self.__ProcessImage(self.__image)
+        self.__ProcessImage()
         self.__image = None
         self.__lock.release()
 
@@ -104,19 +104,21 @@ class DogCamAI():
       self.__runningThread = False
       self.__thread.join()
 
-  def __ProcessImage(self, img):
+  def __ProcessImage(self):
     # Unlikely, but we'll be safe anyways
-    if img is None:
+    if self.__image is None:
+      DogCamLogger.Log("AI: Skipping blank image", DCLogLevel.Debug)
       return
 
     DogCamLogger.Log("AI: Processing image!")
-    blob = cv2.dnn.blobFromImage(img, size=(300, 300), swapRB=True, crop=False)
+    blob = cv2.dnn.blobFromImage(self.__image, size=(300, 300), swapRB=True, crop=False)
     self.__net.setInput(blob)
     vision = self.__net.forward()
 
     # Draw bounding box
-    cv2.rectangle(img, (self.__bounds, self.__bounds), (self.__width-self.__bounds, self.__height-self.__bounds), (100,0,100), 20)
+    cv2.rectangle(self.__image, (self.__bounds, self.__bounds), (self.__width-self.__bounds, self.__height-self.__bounds), (100,0,100), 20)
 
+    # Attempt to get the objects detected in this frame
     for output in vision[0,0,:,:]:
       classID = int(output[1])
       confidence = float(output[2])
@@ -143,5 +145,5 @@ class DogCamAI():
 
     if self.debugDisplay:
       DogCamLogger.Log("AI: Displaying image", DCLogLevel.Debug)
-      cv2.imshow("Output", img)
+      cv2.imshow("Output", self.__image)
     DogCamLogger.Log("AI: Image processed")
