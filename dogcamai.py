@@ -111,8 +111,7 @@ class DogCamAI():
       return
 
     DogCamLogger.Log("AI: Processing image!")
-    blob = cv2.dnn.blobFromImage(self.__image, size=(300, 300), swapRB=True, crop=False)
-    self.__net.setInput(blob)
+    self.__net.setInput(cv2.dnn.blobFromImage(self.__image, size=(300, 300), swapRB=True, crop=False))
     vision = self.__net.forward()
 
     # Draw bounding box
