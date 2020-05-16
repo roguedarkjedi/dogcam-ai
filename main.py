@@ -2,8 +2,11 @@ from dogcamstreamer import DogCamStreamer
 from dogcamai import DogCamAI
 from dogcamsocket import DogCamSocket
 from dogcamconfig import DogCamConfig
+from dogcamlogger import DogCamLogger, DCLogLevel
+import time
 
-print("Starting classes")
+DogCamLogger.Start()
+DogCamLogger.Log("Starting classes", DCLogLevel.Notice)
 
 dcc = DogCamConfig()
 dcs = DogCamStreamer(dcc.StreamingURL,
@@ -20,7 +23,7 @@ dcai = DogCamAI(boundsSize=dcc.AIBoundsSize,
   detectionID=dcc.AIDetectID,
   fpsSync=dcc.StreamingFPS)
 
-print("Starting command socket connection")
+DogCamLogger.Log("Starting command socket connection", DCLogLevel.Notice)
 dcso.Connect()
 
 if dcs.Start():
@@ -28,16 +31,18 @@ if dcs.Start():
   dcai.SetDimensions(dcs.resWidth, dcs.resHeight)
   dcai.Start()
 
-  print("Starting main loop")
+  DogCamLogger.Log("Starting main loop", DCLogLevel.Notice)
   while dcs.Running():
     dcai.PushImage(dcs.Read())
 
     while dcai.commandQueue.empty() is False:
       command = dcai.commandQueue.get_nowait()
-      print(f"Got command: {command}")
+      DogCamLogger.Log(f"Got command: {command}", DCLogLevel.Debug)
       dcso.SendPosition(command)
 
-print("Ending AI controller")
+    time.sleep(0.1)
+
+DogCamLogger.Log("Ending AI controller", DCLogLevel.Notice)
 dcs.Stop()
 dcai.Stop()
 dcso.Disconnect()

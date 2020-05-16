@@ -1,3 +1,4 @@
+from dogcamlogger import DogCamLogger, DCLogLevel
 import cv2
 import numpy as np
 import threading
@@ -45,20 +46,28 @@ class DogCamAI():
       self.__fpsSyncTime = ((1/fpsSync) * 1000)
 
     self.__thread = threading.Thread(target=self.__Update)
-    print("AI: Initialized")
+    DogCamLogger.Log("AI: Initialized", DCLogLevel.Debug)
 
   def SetDimensions(self, W, H):
     self.__width = int(W)
     self.__height = int(H)
-    print(f"AI: Resolution is {self.__width}x{self.__height}")
+    DogCamLogger.Log(f"AI: Resolution is {self.__width}x{self.__height}")
 
   def PushImage(self, image):
-    if self.__lock.acquire(False) is False:
+    if image is None:
+      DogCamLogger.Log("AI: Image pushed was empty", DCLogLevel.Debug)
       return
 
-    if self.__image is None and image is not None:
-      print("AI: Got image to process")
+    if self.__lock.acquire(False) is False:
+      DogCamLogger.Log("AI: Dropped frame as image is busy", DCLogLevel.Verbose)
+      return
+
+    if self.__image is None:
+      DogCamLogger.Log("AI: Got image to process", DCLogLevel.Debug)
       self.__image = image
+    else:
+      DogCamLogger.Log("AI: Image pushed was dropped", DCLogLevel.Verbose)
+
     self.__lock.release()
 
   def __Update(self):
@@ -76,17 +85,19 @@ class DogCamAI():
         self.__lock.release()
 
       if self.debugDisplay:
-        cv2.waitKey(self.__fpsSyncTime)
-
-      time.sleep(0.2)
+        cv2.waitKey(int(self.__fpsSyncTime))
+      else:
+        time.sleep(0.2)
     cv2.destroyAllWindows()
 
   def Start(self):
+    DogCamLogger.Log("AI: AI Processing Started", DCLogLevel.Notice)
     self.__runningThread = True
     self.__thread.start()
 
   def Stop(self):
     if self.__runningThread:
+      DogCamLogger.Log("AI: AI Processing Halted", DCLogLevel.Warn)
       self.__runningThread = False
       self.__thread.join()
 
@@ -95,7 +106,7 @@ class DogCamAI():
     if img is None:
       return
 
-    print("AI: Processing image!")
+    DogCamLogger.Log("AI: Processing image!")
     blob = cv2.dnn.blobFromImage(img, size=(300, 300), swapRB=True, crop=False)
     self.__net.setInput(blob)
     vision = self.__net.forward()
@@ -108,7 +119,7 @@ class DogCamAI():
       confidence = float(output[2])
 
       if confidence > self.__minConfidence and (self.__targetID == 0 or classID == self.__targetID):
-        print(f"AI: Found object {classID} with confidence {confidence}")
+        DogCamLogger.Log(f"AI: Found object {classID} with confidence {confidence}")
         box = output[3:7] * np.array([self.__width, self.__height, self.__width, self.__height])
         (left, top, right, bottom) = box.astype("int")
 
@@ -124,6 +135,6 @@ class DogCamAI():
           self.commandQueue.put_nowait("bottom")
 
     if self.debugDisplay:
-      print("AI: Displaying image")
+      DogCamLogger.Log("AI: Displaying image", DCLogLevel.Debug)
       cv2.imshow("Output", img)
-    print("AI: Image processed")
+    DogCamLogger.Log("AI: Image processed")

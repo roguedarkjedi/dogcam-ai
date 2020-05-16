@@ -1,3 +1,4 @@
+from dogcamlogger import DogCamLogger, DCLogLevel
 import websocket
 import threading
 import time
@@ -22,18 +23,18 @@ class DogCamSocket():
       self.__socket.close()
       self.__socket = None
     except:
-      print("Websocket: Socket constructing")
+      DogCamLogger.Log("Websocket: Socket constructing")
 
     try:
       self.__socket = websocket.WebSocket()
       self.__socket.connect(self.URL)
-      print("Websocket: Socket connected!")
+      DogCamLogger.Log("Websocket: Socket connected!")
       self.__OnConnected()
     except KeyboardInterrupt:
-      print("Websocket: Interrupted!")
+      DogCamLogger.Log("Websocket: Interrupted!", DCLogLevel.Debug)
       raise
     except Exception as ex:
-      print(f"Websocket: Failed to connect!\nException: {ex}")
+      DogCamLogger.Log(f"Websocket: Failed to connect!\nException: {ex}", DCLogLevel.Warn)
       self.__socket = None
       self.__reconnect = True
 
@@ -50,7 +51,7 @@ class DogCamSocket():
 
   def SendPosition(self, direction):
     if self.__processing is False or self.__socket is None or self.__reconnect is True:
-      print("Websocket: Not connected!")
+      DogCamLogger.Log("Websocket: Not connected!", DCLogLevel.Warn)
       return
 
     JsonMessage = {
@@ -58,7 +59,7 @@ class DogCamSocket():
       "source": "dogcamai"
     }
 
-    print("Websocket: Sending new postion message")
+    DogCamLogger.Log("Websocket: Sending new postion message", DCLogLevel.Debug)
     self.__socket.send(json.dumps(JsonMessage))
 
   def __OnConnected(self):
@@ -76,11 +77,11 @@ class DogCamSocket():
 
         # Handle timeouts
         if self.__reconnectTimeout == 0.0:
-          print("Websocket: Detected disconnection")
+          DogCamLogger.Log("Websocket: Detected disconnection", DCLogLevel.Warn)
           self.__reconnectTimeout = time.time()
           self.__reconnect = True
         elif (time.time() - self.__reconnectTimeout) >= self.__maxTimeout:
-          print("Websocket: Exhausted retries to reconnect")
+          DogCamLogger.Log("Websocket: Exhausted retries to reconnect", DCLogLevel.Error)
           self.__processing = False
           break
 
@@ -96,10 +97,10 @@ class DogCamSocket():
           time.sleep(1)
           continue
 
-        print(f"Websocket: Got message: {Message}")
+        DogCamLogger.Log(f"Websocket: Got message: {Message}", DCLogLevel.Debug)
 
       except websocket.WebSocketConnectionClosedException:
-        print("Websocket: was disconnected!")
+        DogCamLogger.Log("Websocket: was disconnected!", DCLogLevel.Warn)
         self.__socket = None
         continue
       except KeyboardInterrupt:

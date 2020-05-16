@@ -1,3 +1,4 @@
+from dogcamlogger import DogCamLogger, DCLogLevel
 import cv2
 import threading
 import time
@@ -22,6 +23,7 @@ class DogCamStreamer():
 
   def __init__(self, inURL, timeBetweenCaptures=5.0, disconnectionTimeout=10.0, frameBufferSize=5, videoFPS=0.0):
     self.vidURL = inURL
+
     self.captureRate = timeBetweenCaptures
     self.netTimeout = disconnectionTimeout
     self.fbSize = frameBufferSize
@@ -30,14 +32,14 @@ class DogCamStreamer():
       self.fpsRate=(1/videoFPS)
 
   def Open(self):
-    print("Webstream: Loading video feed")
+    DogCamLogger.Log("Webstream: Loading video feed", DCLogLevel.Notice)
     self.__cap = cv2.VideoCapture(self.vidURL)
 
     # Keep only a few frames in the buffer, dropping dead frames
     self.__cap.set(cv2.CAP_PROP_BUFFERSIZE, self.fbSize)
 
     if not self.__cap.isOpened():
-      print("Webstream: Could not capture the video!")
+      DogCamLogger.Log("Webstream: Could not capture the video!", DCLogLevel.Warn)
       self.__cap = None
       return False
 
@@ -49,7 +51,7 @@ class DogCamStreamer():
 
   def Start(self):
     if self.Open():
-      print("Webstream: Starting thread")
+      DogCamLogger.Log("Webstream: Starting thread")
       self.__Running = True
       self.__thread = threading.Thread(target=self.__Update, daemon=True)
       self.__thread.start()
@@ -77,7 +79,7 @@ class DogCamStreamer():
     hasHitTimeout = (time.time() - self.__LastErrorTime) >= self.netTimeout and self.__LastErrorTime > 0.0
     if self.__cap is None or self.__cap.isOpened() is False or hasHitTimeout:
       if hasHitTimeout:
-        print("Webstream: Timeout has occurred!")
+        DogCamLogger.Log("Webstream: Timeout has occurred!", DCLogLevel.Warn)
         self.__Running = False
         self.__ReleaseCapture()
         self.__BlankImage()
@@ -90,13 +92,13 @@ class DogCamStreamer():
 
   def __SetError(self):
     if self.__LastErrorTime <= 1.0:
-      print("Webstream: Detected error, waiting...")
+      DogCamLogger.Log("Webstream: Detected error, waiting...", DCLogLevel.Error)
       self.__LastErrorTime = time.time()
       self.__BlankImage()
       self.__ReleaseCapture()
 
   def __BlankImage(self):
-    print("Webstream: Blanking image")
+    DogCamLogger.Log("Webstream: Blanking image", DCLogLevel.Debug)
     self.__lock.acquire()
     self.__img = None
     self.__lock.release()
@@ -127,13 +129,15 @@ class DogCamStreamer():
         if self.__lock.acquire(False) is False:
           self.__FPSSync()
           continue
-        print("Webstream: Capturing image")
+        DogCamLogger.Log("Webstream: Capturing image", DCLogLevel.Verbose)
         self.__img = cv2.resize(image, (self.resWidth, self.resHeight))
         self.__LastReadTime = time.time()
         self.__lock.release()
         if self.__LastErrorTime > 0.0:
-          print("Webstream: Recovered from net disruption")
+          DogCamLogger.Log("Webstream: Recovered from net disruption")
           self.__LastErrorTime = 0
+      else:
+        DogCamLogger.Log("Webstream: Dropped frame (safe)", DCLogLevel.Verbose)
 
       self.__FPSSync()
 

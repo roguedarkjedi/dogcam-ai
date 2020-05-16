@@ -1,3 +1,4 @@
+from dogcamlogger import DogCamLogger, DCLogLevel
 import json
 
 class DogCamConfig():
@@ -6,4 +7,4 @@ class DogCamConfig():
     with open("./config.json","r") as cfg_file:
       ConfigData = json.load(cfg_file)
       self.__dict__ = ConfigData
-      print("Config data has been loaded!")
+      DogCamLogger.Log("Config data has been loaded!", DCLogLevel.Notice)
