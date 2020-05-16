@@ -26,3 +26,4 @@ The end goal is to keep this running on a raspberry pi with relatively good dete
 ---------------
 * Better training models with small focused data sets would be of better usage. Until a better model is created, it still uses [mobilessd from tensorflow](https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API)
 * OpenCV install process needs to be specifically targeted for the Raspberry Pi otherwise process times take about 2s per frame, which is intense.
+* Image processing on a Raspberry Pi using the dnn module takes 2s per frame. There might be faster methods.
