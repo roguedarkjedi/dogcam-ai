@@ -21,7 +21,8 @@ class DogCamAI():
   # Our thread locks for pushing in images to work with
   __lock = threading.Lock()
   # Sync time rate with displays using OpenCV
-  __fpsSyncTime = 1
+  __fpsSyncCvTime = 1
+  __fpsSyncTime = 0.1
   # Width of the image to process
   __width = 0
   # Height of the image to process
@@ -43,7 +44,8 @@ class DogCamAI():
 
     if int(fpsSync) > 0:
       # cv2 waitKey is in ms
-      self.__fpsSyncTime = ((1/fpsSync) * 1000)
+      self.__fpsSyncTime = (1/fpsSync)
+      self.__fpsSyncCvTime = int(self.__fpsSyncTime * 1000)
 
     self.__thread = threading.Thread(target=self.__Update)
     DogCamLogger.Log("AI: Initialized", DCLogLevel.Debug)
@@ -85,9 +87,10 @@ class DogCamAI():
         self.__lock.release()
 
       if self.debugDisplay:
-        cv2.waitKey(int(self.__fpsSyncTime))
+        cv2.waitKey(self.__fpsSyncCvTime)
       else:
-        time.sleep(0.2)
+        time.sleep(self.__fpsSyncTime)
+
     cv2.destroyAllWindows()
 
   def Start(self):
@@ -118,7 +121,7 @@ class DogCamAI():
       classID = int(output[1])
       confidence = float(output[2])
 
-      if confidence > self.__minConfidence and (self.__targetID == 0 or classID == self.__targetID):
+      if (self.__targetID == 0 or classID == self.__targetID) and confidence > self.__minConfidence:
         DogCamLogger.Log(f"AI: Found object {classID} with confidence {confidence}")
         box = output[3:7] * np.array([self.__width, self.__height, self.__width, self.__height])
         (left, top, right, bottom) = box.astype("int")
@@ -133,6 +136,10 @@ class DogCamAI():
           self.commandQueue.put_nowait("top")
         elif bottom >= self.__height-self.__bounds:
           self.commandQueue.put_nowait("bottom")
+
+        # If we found the target, get out now.
+        if self.__targetID != 0:
+          break
 
     if self.debugDisplay:
       DogCamLogger.Log("AI: Displaying image", DCLogLevel.Debug)
