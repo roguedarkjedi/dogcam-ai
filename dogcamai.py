@@ -127,7 +127,7 @@ class DogCamAI():
         box = output[3:7] * np.array([self.__width, self.__height, self.__width, self.__height])
         (left, top, right, bottom) = box.astype("int")
 
-        cv2.rectangle(img, (left, top), (right, bottom), (100,25,0), 2)
+        cv2.rectangle(self.__image, (left, top), (right, bottom), (100,25,0), 2)
 
         if left < self.__bounds:
           self.commandQueue.put_nowait("left")
