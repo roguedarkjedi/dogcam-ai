@@ -3,7 +3,7 @@ The basic AI based camera controller for the overall dogcam project. This runs a
 
 This is separate from the dogcam project due to the nature of how much processing power/resources this project will use because of computer vision and detection.
 
-The end goal is to keep this running on a raspberry pi with relatively good detection rates. Currently, this detects [all of these objects](https://github.com/tensorflow/models/blob/master/research/object_detection/data/mscoco_label_map.pbtxt), but filters out any results to the given ID.
+The end goal is to keep this running on a raspberry pi with relatively good detection rates. Currently, this detects [all of these objects](https://github.com/tensorflow/models/blob/master/research/object_detection/data/mscoco_label_map.pbtxt), but can filter out results to a given ID.
 
 ## Features:
 ---------------
