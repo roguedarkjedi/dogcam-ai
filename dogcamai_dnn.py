@@ -1,4 +1,4 @@
-from dogcamlogger import DogCamLogger, DCLogLevel
+from dogcamlogger import DogCamLogger
 from dogcamaibase import DogCamAIBase
 import numpy as np
 import cv2

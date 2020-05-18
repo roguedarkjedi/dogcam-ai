@@ -1,4 +1,4 @@
-from dogcamlogger import DogCamLogger, DCLogLevel
+from dogcamlogger import DogCamLogger
 from dogcamaibase import DogCamAIBase
 from edgetpu.detection.engine import DetectionEngine
 from PIL import Image
