@@ -32,25 +32,27 @@ You can get that by following the directions found [here](https://coral.ai/docs/
 -----------------
 
 ### Streaming
-**StreamingURL**: is the rtmp ingest for the webcam
-**StreamingCaptureRate**: the delay between capturing an frame to propose it for AI processing
-**StreamingFrameBufferSize**: How big of a frame buffer the webcam has. Lower is less resource usage.
-**StreamingTimeout**: The amount of time from no longer getting a new frame that we consider the rtmp server to be disconnected.
-**StreamingFPS**: Handles display syncing.
+**StreamingURL**: is the rtmp ingest for the webcam.  
+**StreamingCaptureRate**: the delay between capturing an frame to propose it for AI processing.  
+**StreamingFrameBufferSize**: How big of a frame buffer the webcam has. Lower is less resource usage.  
+**StreamingTimeout**: The amount of time from no longer getting a new frame that we consider the rtmp server to be disconnected.  
+**StreamingFPS**: Handles display syncing.  
 
 ### Servo Control
-**CommandsAddress**: The websocket server location that's running [dogcam](https://github.com/roguedarkjedi/dogcam).
-**CommandsTimeout**: The amount of time in seconds from the last message/keepalive to consider the server to be disconnected.
+**CommandsAddress**: The websocket server location that's running [dogcam](https://github.com/roguedarkjedi/dogcam).  
+**CommandsTimeout**: The amount of time in seconds from the last message/keepalive to consider the server to be disconnected.  
 
 ### AI
-**AIMethod**: Valid values are `"dnn"` and `"tf"`. If set to `tf`, the USB Accelerator libraries are used. Otherwise, OpenCV's dnn method will be used to process the images from the camera.
-**AIDisplayVision**: Have the AI display on screen what it sees as it runs. This does run slightly slower.
-**AIBoundsSize**: The bounding box around the edges of the screen. This dictates how far away from the screen boundaries to place the edge detection. If an object overlaps or intersects this will cause commands to be sent to the websocket server.
-**AIMinimumConfidence**: The minimum confidence level to consider the an object for detection.
-**AIDetectID**: The label id for the class detection to filter on ([ids found here](https://github.com/tensorflow/models/blob/master/research/object_detection/data/mscoco_label_map.pbtxt)). If set to 0, all detected objects can cause commands to be sent. It is recommended you fill this config with a number other than 0.
+**AIMethod**: Valid values are `"dnn"` and `"tf"`. If set to `tf`, the USB Accelerator libraries are used. Otherwise, OpenCV's dnn method will be used to process the images from the camera.  
+**AIDisplayVision**: Have the AI display on screen what it sees as it runs. This does run slightly slower.  
+**AIBoundsSize**: The bounding box around the edges of the screen. This dictates how far away from the screen boundaries to place the edge detection. If an object overlaps or intersects this will cause commands to be sent to the websocket server.  
+**AIMinimumConfidence**: The minimum confidence level to consider the an object for detection.  
+**AIDetectID**: The label id for the class detection to filter on ([ids found here](https://github.com/tensorflow/models/blob/master/research/object_detection/data/mscoco_label_map.pbtxt)). If set to 0, all detected objects can cause commands to be sent. It is recommended you fill this config with a number other than 0.  
 
 ### Misc
-**LoggingLevel**: The logging spew level for the output console. Any messages with values higher than the setting will be suppressed. Passing `silence` will mute all messages. A list of valid options can be seen below:  
+**LoggingLevel**: The logging spew level for the output console. Any messages with values higher than the setting will be suppressed. Passing `silence` will mute all messages.  
+
+A list of valid options can be seen below:  
 ```
   Debug
   Verbose
