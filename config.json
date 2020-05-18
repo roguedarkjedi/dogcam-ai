@@ -8,6 +8,7 @@
   "CommandsAddress": "ws://192.168.50.169:5867/",
   "CommandsTimeout": 50.0,
   
+  "AIMethod": "dnn",
   "AIDisplayVision": false,
   "AIBoundsSize": 15,
   "AIMinimumConfidence": 0.4,

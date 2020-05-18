@@ -1,5 +1,5 @@
 from dogcamstreamer import DogCamStreamer
-from dogcamai import DogCamAI
+from dogcamaifactory import DogCamAIFactory
 from dogcamsocket import DogCamSocket
 from dogcamconfig import DogCamConfig
 from dogcamlogger import DogCamLogger, DCLogLevel
@@ -9,6 +9,17 @@ DogCamLogger.Start()
 DogCamLogger.Log("Starting classes", DCLogLevel.Notice)
 
 dcc = DogCamConfig()
+
+dcai = DogCamAIFactory.CreateAI(aiType=dcc.AIMethod, 
+  boundsSize=dcc.AIBoundsSize,
+  minimumConfidence=dcc.AIMinimumConfidence,
+  displayOut=dcc.AIDisplayVision,
+  detectionID=dcc.AIDetectID,
+  fpsSync=dcc.StreamingFPS)
+  
+if dcai is None:
+  exit()
+
 dcs = DogCamStreamer(dcc.StreamingURL,
   timeBetweenCaptures=dcc.StreamingCaptureRate,
   disconnectionTimeout=dcc.StreamingTimeout,
@@ -16,12 +27,6 @@ dcs = DogCamStreamer(dcc.StreamingURL,
   videoFPS=dcc.StreamingFPS)
 
 dcso = DogCamSocket(dcc.CommandsAddress, MaxTimeout=dcc.CommandsTimeout)
-
-dcai = DogCamAI(boundsSize=dcc.AIBoundsSize,
-  minimumConfidence=dcc.AIMinimumConfidence,
-  displayOut=dcc.AIDisplayVision,
-  detectionID=dcc.AIDetectID,
-  fpsSync=dcc.StreamingFPS)
 
 DogCamLogger.Log("Starting command socket connection", DCLogLevel.Notice)
 dcso.Connect()
