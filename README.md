@@ -14,6 +14,8 @@ The end goal is to keep this running on a raspberry pi with relatively good dete
 * Safe threading design
 * Mostly configurable
 * Logging spew control
+* Support for USB accelerators
+* Extensible for additional hardware ai devices
 
 ## Install:
 ---------------
@@ -22,8 +24,12 @@ The end goal is to keep this running on a raspberry pi with relatively good dete
 3. Change values in the config.json
 4. Run main.py
 
+If using the [Corel USB Accelerator](https://coral.ai/products/accelerator/) (Recommended), you need to also install `libedgetpu1-std python3-edgetpu` packages from the Google repro.
+
+You can get that by following the directions found [here](https://coral.ai/docs/accelerator/get-started/#on-linux).
+
 ## Caveats:
 ---------------
 * Better training models with small focused data sets would be of better usage. Until a better model is created, it still uses [mobilessd from tensorflow](https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API)
-* OpenCV install process needs to be specifically targeted for the Raspberry Pi otherwise process times take about 2s per frame, which is intense.
-* Image processing on a Raspberry Pi using the dnn module takes 2s per frame. There might be faster methods.
+* On the Raspberry Pi 3B, a single frame with AI processing takes, on average, 2 seconds. This is the upper bounds of what this hardware can do with the given model. Using an AI accelerator is recommended.
+
