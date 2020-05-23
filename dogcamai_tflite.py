@@ -12,14 +12,14 @@ class DogCamAITFLite(DogCamAIBase):
     super().__init__()
 
   def _ProcessImageInternal(self):
-    self._image = cv2.resize(self._image, self._width, self._height)
+    self._image = cv2.resize(self._image, (self._width, self._height))
 
     img = self._image.copy()
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = Image.fromarray(img)
 
     # Run the tensorflow model
-    detectionData = self.__net.DetectWithImage(img, self._minConfidence, top_k=5,
+    detectionData = self.__net.detect_with_image(img, self._minConfidence, top_k=5,
       keep_aspect_ratio=True, relative_coord=False)
 
     for obj in detectionData:
