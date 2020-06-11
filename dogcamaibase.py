@@ -114,7 +114,7 @@ class DogCamAIBase():
       DogCamLogger.Log("AI: Skipping blank image", DCLogLevel.Debug)
       return
 
-    DogCamLogger.Log("AI: Processing image!")
+    DogCamLogger.Log("AI: Processing image!", DCLogLevel.Verbose)
 
     self._ProcessImageInternal()
 
@@ -122,7 +122,7 @@ class DogCamAIBase():
       DogCamLogger.Log("AI: Displaying image", DCLogLevel.Debug)
       cv2.imshow("Output", self._image)
 
-    DogCamLogger.Log("AI: Image processed")
+    DogCamLogger.Log("AI: Image processed", DCLogLevel.Verbose)
 
   def _DrawBoundingBox(self):
     # Draw bounding box
