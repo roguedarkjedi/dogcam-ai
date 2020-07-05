@@ -44,6 +44,7 @@ You can get that by following the directions found [here](https://coral.ai/docs/
 
 ### AI
 **AIMethod**: Valid values are `"dnn"` and `"tf"`. If set to `tf`, the USB Accelerator libraries are used. Otherwise, OpenCV's dnn method will be used to process the images from the camera.  
+**AIModels**: A json dictionary that contains the relative paths to the AI model files. Valid keys are `"dnn"` and `"tf"`. Your current `AIMethod` must have a defined model or the program will crash.  
 **AIDisplayVision**: Have the AI display on screen what it sees as it runs. This does run slightly slower.  
 **AIBoundsSize**: The bounding box around the edges of the screen. This dictates how far away from the screen boundaries to place the edge detection. If an object overlaps or intersects this will cause commands to be sent to the websocket server.  
 **AIMinimumConfidence**: The minimum confidence level to consider the an object for detection.  

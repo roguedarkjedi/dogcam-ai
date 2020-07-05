@@ -9,6 +9,10 @@
   "CommandsTimeout": 50.0,
   
   "AIMethod": "tf",
+  "AIModels": {
+    "dnn": "./training/mobilenet.pb",
+    "tf": "./training/mobilenet_ssd_v2.tflite"
+  },
   "AIDisplayVision": false,
   "AIBoundsSize": 15,
   "AIMinimumConfidence": 0.4,

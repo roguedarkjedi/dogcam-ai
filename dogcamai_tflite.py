@@ -7,8 +7,8 @@ import cv2
 class DogCamAITFLite(DogCamAIBase):
   __net = None
 
-  def __init__(self):
-    self.__net = DetectionEngine("./training/mobilenet_ssd_v2.tflite")
+  def __init__(self, fileLocation:str):
+    self.__net = DetectionEngine(fileLocation)
     super().__init__()
 
   def _ProcessImageInternal(self):

@@ -10,7 +10,10 @@ DogCamLogger.Log("Starting classes", DCLogLevel.Notice)
 
 dcc = DogCamConfig()
 
-dcai = DogCamAIFactory.CreateAI(aiType=dcc.AIMethod,
+aiUsed = dcc.AIMethod.lower()
+
+dcai = DogCamAIFactory.CreateAI(aiType=aiUsed,
+  aiModel=dcc.AIModels[aiUsed],
   boundsSize=dcc.AIBoundsSize,
   minimumConfidence=dcc.AIMinimumConfidence,
   displayOut=dcc.AIDisplayVision,

@@ -9,9 +9,8 @@ class DogCamAIDNN(DogCamAIBase):
   # Sync time rate with displays using OpenCV
   _fpsSyncCvTime = 1
 
-  def __init__(self):
-    self.__net = cv2.dnn.readNetFromTensorflow("./training/mobilenet.pb",
-                    "./training/mobilenet.pbtxt")
+  def __init__(self, fileLocation: str):
+    self.__net = cv2.dnn.readNetFromTensorflow(fileLocation, fileLocation + "txt")
     super().__init__()
 
   def _ProcessImageInternal(self):
