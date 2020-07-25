@@ -134,7 +134,7 @@ class DogCamAIBase():
     
     # AABB bounding collision testing
     BoxTop = (top < self._bounds)
-    BoxBottom = (bottom >= self._height-self._bounds)
+    BoxBottom = (bottom > self._height-self._bounds)
     BoxLeft = (left < self._bounds)
     BoxRight = (right > self._width-self._bounds)
     
