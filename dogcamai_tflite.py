@@ -23,7 +23,7 @@ class DogCamAITFLite(DogCamAIBase):
       keep_aspect_ratio=True, relative_coord=False)
 
     for obj in detectionData:
-      if (self._targetID == 0 or obj.label_id == self._targetID):
+      if (not self._targetID or (type(self._targetID) == list and obj.label_id in self._targetID)):
         DogCamLogger.Log(f"AI: Found object {obj.label_id} with confidence {obj.score}")
 
         # Get the bounding box of the object
@@ -33,5 +33,7 @@ class DogCamAITFLite(DogCamAIBase):
         self._HandleObjectDetectionResult(left, right, top, bottom)
 
         # If we found the target, get out now.
-        if self._targetID != 0:
-          break
+        #if self._targetID != 0:
+        #  break
+
+    self._DrawBoundingBox()

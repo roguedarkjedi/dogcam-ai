@@ -41,7 +41,7 @@ class DogCamAIBase():
     self._bounds = int(boundsSize)
     self._minConfidence = float(minimumConfidence)
     self._image = None
-    self._targetID = int(detectionID)
+    self._targetID = detectionID
 
     if int(fpsSync) > 0:
       self._fpsSyncTime = (1/fpsSync)
