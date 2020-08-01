@@ -7,7 +7,6 @@ class DogCamStreamer():
   __cap = None
   __img = None
   __thread = None
-  __lock = threading.RLock()
 
   __Running = False
   __LastReadTime = 0.0
@@ -99,9 +98,7 @@ class DogCamStreamer():
 
   def __BlankImage(self):
     DogCamLogger.Log("Webstream: Blanking image", DCLogLevel.Debug)
-    self.__lock.acquire()
     self.__img = None
-    self.__lock.release()
 
   # Easy function to just sleep appropriately
   def __FPSSync(self):
@@ -125,14 +122,9 @@ class DogCamStreamer():
         self.__FPSSync()
         continue
       elif (time.time() - self.__LastReadTime) >= self.captureRate:
-        # If we cannot capture a lock, then don't capture the image
-        if self.__lock.acquire(False) is False:
-          self.__FPSSync()
-          continue
         DogCamLogger.Log("Webstream: Capturing image", DCLogLevel.Verbose)
         self.__img = cv2.resize(image, (self.resWidth, self.resHeight))
         self.__LastReadTime = time.time()
-        self.__lock.release()
         if self.__LastErrorTime > 0.0:
           DogCamLogger.Log("Webstream: Recovered from net disruption")
           self.__LastErrorTime = 0
@@ -142,10 +134,8 @@ class DogCamStreamer():
       self.__FPSSync()
 
   def Read(self):
-    self.__lock.acquire(True)
     retImg = self.__img
-    self.__lock.release()
-
+    #print(f"it has been {(time.time() - self.__LastReadTime)} seconds since grab")
     return retImg
 
   def Running(self):

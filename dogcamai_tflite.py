@@ -31,6 +31,7 @@ class DogCamAITFLite(DogCamAIBase):
         (left, top, right, bottom) = box
 
         self._HandleObjectDetectionResult(left, right, top, bottom)
+        break
 
         # If we found the target, get out now.
         #if self._targetID != 0:

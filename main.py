@@ -46,10 +46,10 @@ if dcs.Start():
 
     while dcai.commandQueue.empty() is False:
       command = dcai.commandQueue.get_nowait()
-      DogCamLogger.Log(f"Got command: {command}", DCLogLevel.Debug)
+      DogCamLogger.Log(f"Got command: {command}", DCLogLevel.Log)
       dcso.SendPosition(command)
 
-    time.sleep(0.1)
+    time.sleep(0.01)
 
 DogCamLogger.Log("Ending AI controller", DCLogLevel.Notice)
 dcs.Stop()

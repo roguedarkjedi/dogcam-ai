@@ -15,8 +15,8 @@ class DogCamAIBase():
   _thread = None
   # The current image to display
   _image = None
-  # Our thread locks for pushing in images to work with
-  _lock = threading.Lock()
+  # The image to work on next
+  __pendingImage = None
   # Sync time rate with displays using OpenCV
   _fpsSyncCvTime = 1
   _fpsSyncTime = 0.1
@@ -41,6 +41,7 @@ class DogCamAIBase():
     self._bounds = int(boundsSize)
     self._minConfidence = float(minimumConfidence)
     self._image = None
+    self.__pendingImage = None
     self._targetID = detectionID
 
     if int(fpsSync) > 0:
@@ -64,17 +65,7 @@ class DogCamAIBase():
       DogCamLogger.Log("AI: Image pushed was empty", DCLogLevel.Debug)
       return
 
-    if self._lock.acquire(False) is False:
-      DogCamLogger.Log("AI: Dropped frame as image is busy", DCLogLevel.Verbose)
-      return
-
-    if self._image is None:
-      DogCamLogger.Log("AI: Got image to process", DCLogLevel.Debug)
-      self._image = image
-    else:
-      DogCamLogger.Log("AI: Image pushed was dropped", DCLogLevel.Verbose)
-
-    self._lock.release()
+    self.__pendingImage = image
 
   def __Update(self):
     # Create Debug window
@@ -84,11 +75,12 @@ class DogCamAIBase():
       cv2.resizeWindow("Output", (320, 240))
 
     while self._runningThread:
-      if self._image is not None:
-        self._lock.acquire()
+      if self.__pendingImage is not None:
+        self._image = self.__pendingImage
+        self.__pendingImage = None
         self.__ProcessImage()
         self._image = None
-        self._lock.release()
+        
 
       if self.debugDisplay:
         cv2.waitKey(self._fpsSyncCvTime)
@@ -135,7 +127,7 @@ class DogCamAIBase():
     # AABB bounding collision testing
     BoxTop = (top < self._bounds)
     BoxBottom = (bottom > self._height-self._bounds)
-    BoxLeft = (left < self._bounds)
+    BoxLeft = (left <= self._bounds)
     BoxRight = (right > self._width-self._bounds)
     
     # If the dog is in a wide shot 

@@ -28,7 +28,7 @@ class DogCamSocket():
     try:
       self.__socket = websocket.WebSocket()
       self.__socket.connect(self.URL)
-      DogCamLogger.Log("Websocket: Socket connected!")
+      DogCamLogger.Log("Websocket: Socket connected!", DCLogLevel.Notice)
       self.__OnConnected()
     except KeyboardInterrupt:
       DogCamLogger.Log("Websocket: Interrupted!", DCLogLevel.Debug)
