@@ -80,7 +80,6 @@ class DogCamAIBase():
         self.__pendingImage = None
         self.__ProcessImage()
         self._image = None
-        
 
       if self.debugDisplay:
         cv2.waitKey(self._fpsSyncCvTime)
@@ -106,15 +105,17 @@ class DogCamAIBase():
       DogCamLogger.Log("AI: Skipping blank image", DCLogLevel.Debug)
       return
 
-    DogCamLogger.Log("AI: Processing image!", DCLogLevel.Verbose)
+    ProcessingTime=time.time()
+    DogCamLogger.Log(f"AI: Processing image at {ProcessingTime}!", DCLogLevel.Verbose)
 
     self._ProcessImageInternal()
 
+    ProcessingTime=time.time()-ProcessingTime
     if self.debugDisplay:
       DogCamLogger.Log("AI: Displaying image", DCLogLevel.Debug)
       cv2.imshow("Output", self._image)
 
-    DogCamLogger.Log("AI: Image processed", DCLogLevel.Verbose)
+    DogCamLogger.Log(f"AI: Image processed in {ProcessingTime} seconds", DCLogLevel.Verbose)
 
   def _DrawBoundingBox(self):
     # Draw bounding box
