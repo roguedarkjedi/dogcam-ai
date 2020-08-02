@@ -11,7 +11,6 @@ The end goal is to keep this running on a raspberry pi with relatively good dete
 * AI detection and box overlap calculation
 * All network functionality has the ability to recover from connection issues
 * Lag reduction mechanics
-* Safe threading design
 * Mostly configurable
 * Logging spew control
 * Support for USB accelerators
@@ -33,7 +32,7 @@ You can get that by following the directions found [here](https://coral.ai/docs/
 
 ### Streaming
 **StreamingURL**: is the rtmp ingest for the webcam.  
-**StreamingCaptureRate**: the delay between capturing an frame to propose it for AI processing.  
+**StreamingCaptureRate**: the delay between capturing an frame to propose it for AI processing (if we haven't grabbed a newer frame).
 **StreamingFrameBufferSize**: How big of a frame buffer the webcam has. Lower is less resource usage.  
 **StreamingTimeout**: The amount of time from no longer getting a new frame that we consider the rtmp server to be disconnected.  
 **StreamingFPS**: Handles display syncing.  
