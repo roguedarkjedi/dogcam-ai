@@ -19,7 +19,7 @@ class DogCamAITFLite(DogCamAIBase):
     img = Image.fromarray(img)
 
     # Run the tensorflow model
-    detectionData = self.__net.detect_with_image(img, self._minConfidence, top_k=5,
+    detectionData = self.__net.detect_with_image(img, self._minConfidence, top_k=1,
       keep_aspect_ratio=True, relative_coord=False)
 
     for obj in detectionData:
