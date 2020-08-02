@@ -11,7 +11,7 @@ class DogCamStreamer():
   __Running = False
   __LastReadTime = 0.0
   __LastErrorTime = 0.0
-  __HasBeenFlushed = True
+  __HasBeenFlushed = False
 
   resWidth = 0
   resHeight = 0
@@ -34,7 +34,7 @@ class DogCamStreamer():
   def Open(self):
     DogCamLogger.Log("Webstream: Loading video feed", DCLogLevel.Notice)
     self.__cap = cv2.VideoCapture(self.vidURL)
-    self.__HasBeenFlushed = True
+    self.__HasBeenFlushed = False
 
     # Keep only a few frames in the buffer, dropping dead frames
     self.__cap.set(cv2.CAP_PROP_BUFFERSIZE, self.fbSize)
@@ -123,7 +123,7 @@ class DogCamStreamer():
         self.__SetError()
         self.__FPSSync()
         continue
-      elif self.__HasBeenFlushed or ((time.time() - self.__LastReadTime) >= self.captureRate and not self.__HasBeenFlushed):
+      elif not self.__HasBeenFlushed or ((time.time() - self.__LastReadTime) >= self.captureRate and self.__HasBeenFlushed):
         DogCamLogger.Log("Webstream: Capturing image", DCLogLevel.Verbose)
         self.__img = cv2.resize(image, (self.resWidth, self.resHeight))
         self.__LastReadTime = time.time()
