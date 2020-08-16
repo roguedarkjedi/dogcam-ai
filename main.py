@@ -17,8 +17,7 @@ dcai = DogCamAIFactory.CreateAI(aiType=aiUsed,
   boundsSize=dcc.AIBoundsSize,
   minimumConfidence=dcc.AIMinimumConfidence,
   displayOut=dcc.AIDisplayVision,
-  detectionID=dcc.AIDetectID,
-  fpsSync=dcc.StreamingFPS)
+  detectionID=dcc.AIDetectID)
 
 if dcai is None:
   DogCamLogger.Log("AI Project exiting due to failure to start AI", DCLogLevel.Notice)
@@ -27,8 +26,7 @@ if dcai is None:
 dcs = DogCamStreamer(dcc.StreamingURL,
   timeBetweenCaptures=dcc.StreamingCaptureRate,
   disconnectionTimeout=dcc.StreamingTimeout,
-  frameBufferSize=dcc.StreamingFrameBufferSize,
-  videoFPS=dcc.StreamingFPS)
+  frameBufferSize=dcc.StreamingFrameBufferSize)
 
 dcso = DogCamSocket(dcc.CommandsAddress, MaxTimeout=dcc.CommandsTimeout)
 
@@ -36,7 +34,7 @@ DogCamLogger.Log("Starting command socket connection", DCLogLevel.Notice)
 dcso.Connect()
 
 if dcs.Start():
-  dcs.Resize(newWidth=300, newHeight=300)
+  dcs.Resize(newWidth=320, newHeight=240)
   dcai.SetDimensions(dcs.resWidth, dcs.resHeight)
   dcai.Start()
 
@@ -49,7 +47,7 @@ if dcs.Start():
       DogCamLogger.Log(f"Got command: {command}", DCLogLevel.Log)
       dcso.SendPosition(command)
 
-    time.sleep(0.01)
+    time.sleep(0.001)
 
 DogCamLogger.Log("Ending AI controller", DCLogLevel.Notice)
 dcs.Stop()

@@ -21,15 +21,12 @@ class DogCamStreamer():
   captureRate=0.0
   netTimeout=0.0
 
-  def __init__(self, inURL, timeBetweenCaptures=5.0, disconnectionTimeout=10.0, frameBufferSize=5, videoFPS=0.0):
+  def __init__(self, inURL, timeBetweenCaptures=5.0, disconnectionTimeout=10.0, frameBufferSize=5):
     self.vidURL = inURL
 
     self.captureRate = timeBetweenCaptures
     self.netTimeout = disconnectionTimeout
     self.fbSize = frameBufferSize
-
-    if videoFPS >= 1.0:
-      self.fpsRate=(1/videoFPS)
 
   def Open(self):
     DogCamLogger.Log("Webstream: Loading video feed", DCLogLevel.Notice)
@@ -104,8 +101,7 @@ class DogCamStreamer():
 
   # Easy function to just sleep appropriately
   def __FPSSync(self):
-    if self.fpsRate > 0.0:
-      time.sleep(self.fpsRate)
+    time.sleep(0.00033)
 
   def __Update(self):
     while self.__Running:

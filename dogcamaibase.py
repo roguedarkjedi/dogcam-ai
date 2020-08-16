@@ -17,9 +17,6 @@ class DogCamAIBase():
   _image = None
   # The image to work on next
   __pendingImage = None
-  # Sync time rate with displays using OpenCV
-  _fpsSyncCvTime = 1
-  _fpsSyncTime = 0.1
   # Width of the image to process
   _width = 0
   # Height of the image to process
@@ -35,7 +32,7 @@ class DogCamAIBase():
     DogCamLogger.Log("AI: Allocated", DCLogLevel.Verbose)
 
   def Initialize(self, boundsSize=100, minimumConfidence=0.3, displayOut=False,
-      detectionID=0, fpsSync=0):
+      detectionID=0):
 
     self.debugDisplay = displayOut
     self._bounds = int(boundsSize)
@@ -43,11 +40,6 @@ class DogCamAIBase():
     self._image = None
     self.__pendingImage = None
     self._targetID = detectionID
-
-    if int(fpsSync) > 0:
-      self._fpsSyncTime = (1/fpsSync)
-      # cv2 waitKey is in ms
-      self._fpsSyncCvTime = int(self._fpsSyncTime * 1000)
 
     self._thread = threading.Thread(target=self.__Update)
     DogCamLogger.Log("AI: Initialized", DCLogLevel.Debug)
@@ -81,10 +73,7 @@ class DogCamAIBase():
         self.__ProcessImage()
         self._image = None
 
-      if self.debugDisplay:
-        cv2.waitKey(self._fpsSyncCvTime)
-      else:
-        time.sleep(self._fpsSyncTime)
+        time.sleep(0.000333)
 
     cv2.destroyAllWindows()
 
