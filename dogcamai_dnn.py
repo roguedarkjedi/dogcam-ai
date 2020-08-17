@@ -32,7 +32,4 @@ class DogCamAIDNN(DogCamAIBase):
         (left, top, right, bottom) = box.astype("int")
 
         self._HandleObjectDetectionResult(left, right, top, bottom)
-
-        # If we found the target, get out now.
-        if self._targetID != 0:
-          break
+        break
