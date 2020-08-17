@@ -13,7 +13,7 @@
     "tf": "./training/mobilenet_ssd_v2.tflite"
   },
   "AIDisplayVision": false,
-  "AIBoundsSize": 15,
+  "AIBoundsSize": 10,
   "AIMinimumConfidence": 0.4,
   "AIDetectID": [17, 18],
 

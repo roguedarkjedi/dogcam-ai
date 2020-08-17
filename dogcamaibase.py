@@ -109,7 +109,7 @@ class DogCamAIBase():
   def _DrawBoundingBox(self):
     # Draw bounding box
     cv2.rectangle(self._image, (self._bounds, self._bounds), (self._width-self._bounds,
-                  self._height-self._bounds), (100,0,100), 20)
+                  self._height-self._bounds), (100,0,100), 4)
 
   def _HandleObjectDetectionResult(self, left, right, top, bottom):
     cv2.rectangle(self._image, (left, top), (right, bottom), (100,25,0), 2)
