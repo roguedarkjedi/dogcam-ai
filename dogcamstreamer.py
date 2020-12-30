@@ -147,7 +147,7 @@ class DogCamStreamer():
         continue
       # TODO: Heavily consider dropping the capture rate functionality here. While it's rather silly, it's to attempt
       # to limit the number of resize operations that are done on the image, saving some CPU cycles.
-      elif not self.__HasBeenFlushed or ((time.time() - self.__LastReadTime) >= self.captureRate and self.__HasBeenFlushed):
+      elif not self.__HasBeenFlushed or ((time.time() - self.__LastReadTime) >= self.captureRate and self.__HasBeenFlushed) or self.captureRate == 0.0:
         DogCamLogger.Log("Webstream: Capturing image", DCLogLevel.Verbose)
         self.__img = cv2.resize(image, (self.resWidth, self.resHeight))
         self.__LastReadTime = time.time()
