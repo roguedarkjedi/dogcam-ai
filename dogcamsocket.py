@@ -64,6 +64,9 @@ class DogCamSocket():
     if self.__processing is False or self.__socket is None or self.__reconnect is True:
       DogCamLogger.Log("Websocket: Not connected!", DCLogLevel.Warn)
       return
+    
+    if message is None:
+      return
 
     self.__socket.send(message)
 
