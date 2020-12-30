@@ -49,7 +49,7 @@ if dcs.Start():
 
     # Push info messages constantly.
     dcso.SendMessage(dcs.GetStatus())
-    
+
     time.sleep(0.001)
 
 DogCamLogger.Log("Ending AI controller", DCLogLevel.Notice)
