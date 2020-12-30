@@ -58,11 +58,13 @@ class DogCamSocket():
 
     self.SendMessage(json.dumps(JsonMessage))
 
+  def IsConnectionReady(self):
+    return not (self.__processing is False or self.__socket is None or self.__reconnect is True)
+
   # This function should typically be given json but does not check to see if you have given it valid json
   # as it doesn't essentially require json
   def SendMessage(self, message):
-    if self.__processing is False or self.__socket is None or self.__reconnect is True:
-      DogCamLogger.Log("Websocket: Not connected!", DCLogLevel.Warn)
+    if self.IsConnectionReady() is False:
       return
     
     if message is None:
@@ -81,7 +83,7 @@ class DogCamSocket():
     while self.__processing:
 
       # Attempt to handle reconnection
-      if self.__socket is None:
+      if self.IsConnectionReady() is False:
 
         # Handle timeouts
         if self.__reconnectTimeout == 0.0:
