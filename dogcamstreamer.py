@@ -35,7 +35,7 @@ class DogCamStreamer():
     DogCamLogger.Log("Webstream: Loading video feed", DCLogLevel.Notice)
     if self.__cap is not None:
       DogCamLogger.Log("Webstream: Another capture instance already exists", DCLogLevel.Warn)
-    
+
     self.__LastConnectionAttempt = time.time()
     self.__cap = cv2.VideoCapture(self.vidURL)
     self.__HasBeenFlushed = False
