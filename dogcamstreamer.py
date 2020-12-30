@@ -89,10 +89,9 @@ class DogCamStreamer():
       self.__cap = None
 
   def __CheckTimeout(self):
-    timeSinceError = (time.time() - self.__LastErrorTime)
     lastConnectionAttempt = (time.time() - self.__LastConnectionAttempt)
     
-    isTotalDisconnection = timeSinceError >= self.netTimeout and self.__LastErrorTime > 0.0
+    isTotalDisconnection = (time.time() - self.__LastErrorTime) >= self.netTimeout and self.__LastErrorTime > 0.0
     isConnectionRetry = (self.__cap is None or self.__cap.isOpened() is False) and lastConnectionAttempt >= 5.0
 
     # See if we should check to restart the capture software again
