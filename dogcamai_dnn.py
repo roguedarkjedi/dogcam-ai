@@ -26,7 +26,7 @@ class DogCamAIDNN(DogCamAIBase):
       classID = int(output[1])
       confidence = float(output[2])
 
-      if (not self._targetID or (type(self._targetID) == list and classID in self._targetID)) and confidence > self._minConfidence:
+      if (not self._targetID or (isinstance(self._targetID, list) and classID in self._targetID)) and confidence > self._minConfidence:
         DogCamLogger.Log(f"AI: Found object {classID} with confidence {confidence}")
         box = output[3:7] * np.array([self._width, self._height, self._width, self._height])
         (left, top, right, bottom) = box.astype("int")
