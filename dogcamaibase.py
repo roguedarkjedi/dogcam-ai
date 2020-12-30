@@ -113,14 +113,14 @@ class DogCamAIBase():
 
   def _HandleObjectDetectionResult(self, left, right, top, bottom):
     cv2.rectangle(self._image, (left, top), (right, bottom), (100,25,0), 2)
-    
+
     # AABB bounding collision testing
     BoxTop = (top < self._bounds)
     BoxBottom = (bottom > self._height-self._bounds)
     BoxLeft = (left <= self._bounds)
     BoxRight = (right > self._width-self._bounds)
-    
-    # If the dog is in a wide shot 
+
+    # If the dog is in a wide shot
     # (meaning they take up the left and right collision at the same time)
     # don't attempt to over adjust
     if BoxLeft ^ BoxRight:
@@ -128,7 +128,7 @@ class DogCamAIBase():
         self.commandQueue.put_nowait("left")
       else:
         self.commandQueue.put_nowait("right")
-    
+
     # Same as the above but in portrait
     if BoxTop ^ BoxBottom:
       if BoxTop:
