@@ -2,6 +2,7 @@ from dogcamlogger import DogCamLogger, DCLogLevel
 import cv2
 import threading
 import time
+import json
 
 class DogCamStreamer():
   __cap = None
@@ -13,6 +14,7 @@ class DogCamStreamer():
   __LastErrorTime = 0.0
   __LastConnectionAttempt = 0.0
   __HasBeenFlushed = False
+  __CurrentStatus = None
 
   resWidth = 0
   resHeight = 0
@@ -22,7 +24,7 @@ class DogCamStreamer():
   captureRate=0.0
   netTimeout=0.0
 
-  def __init__(self, inURL, timeBetweenCaptures=5.0, disconnectionTimeout=10.0, frameBufferSize=5):
+  def __init__(self, inURL, timeBetweenCaptures=1.2, disconnectionTimeout=45.0, frameBufferSize=5):
     self.vidURL = inURL
 
     self.captureRate = timeBetweenCaptures
@@ -43,8 +45,11 @@ class DogCamStreamer():
 
     if not self.__cap.isOpened():
       DogCamLogger.Log("Webstream: Could not capture the video!", DCLogLevel.Warn)
+      self.__SetStatus("Failed to load video capture")
       self.__cap = None
       return False
+    else:
+      self.__SetStatus("Video feed loaded")
 
     if self.resWidth == 0:
       self.resWidth = self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -98,12 +103,14 @@ class DogCamStreamer():
     if isTotalDisconnection:
       # At this point we are starved of updates entirely and we fail out.
       DogCamLogger.Log("Webstream: Timeout has occurred!", DCLogLevel.Notice)
+      self.__SetStatus(f"Total timeout has occurred! Stopping video capture service")
       self.__Running = False
       self.__ReleaseCapture()
       self.__BlankImage()
       return False
     elif isConnectionRetry:
       DogCamLogger.Log("Webstream: Attempting to restart capture", DCLogLevel.Log)
+      self.__SetStatus(f"Attempting to restart capture at {lastConnectionAttempt} of max time {self.netTimeout}")
       self.__BlankImage()
       self.__ReleaseCapture()
       self.Open()
@@ -142,6 +149,7 @@ class DogCamStreamer():
       retVal, image  = self.__cap.read()
 
       if not retVal:
+        self.__SetStatus("Encountered frame capture error")
         self.__SetError()
         self.__FPSSync()
         continue
@@ -154,6 +162,7 @@ class DogCamStreamer():
         self.__HasBeenFlushed = False
         if self.__LastErrorTime > 0.0:
           DogCamLogger.Log("Webstream: Recovered from net disruption")
+          self.__SetStatus("Recovered from net disruption")
           self.__LastErrorTime = 0
       else:
         DogCamLogger.Log("Webstream: Dropped frame (safe)", DCLogLevel.Verbose)
@@ -162,6 +171,10 @@ class DogCamStreamer():
 
       self.__FPSSync()
 
+  def __SetStatus(self, message):
+    DogCamLogger.Log(f"Webstream: set debug string to {message}", DCLogLevel.Debug)
+    self.__CurrentStatus = f"AI Stream: {message}"
+    
   def Read(self):
     # Pulls the current image from the framebuffer var
     retImg = self.__img
@@ -173,6 +186,21 @@ class DogCamStreamer():
   def Running(self):
     return self.__Running
   
+  def GetStatus(self):
+    if self.__CurrentStatus is None:
+      return None
+    
+    JsonMessage = {
+      "message": self.__CurrentStatus,
+      "type": "message",
+      "source": "dogcamai"
+    }
+    
+    # Clear the current status message
+    self.__CurrentStatus = None
+    
+    return json.dumps(JsonMessage)
+  
   # This resets the current instance, opting to force a reconnection.
   def Reset(self):
     self.__SetError()
@@ -180,6 +208,7 @@ class DogCamStreamer():
 
   # Stops this instance
   def Stop(self):
+    self.__SetStatus("Stopping")
     self.__Running = False
     self.__BlankImage()
 
