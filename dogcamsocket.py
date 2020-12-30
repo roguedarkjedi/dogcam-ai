@@ -52,7 +52,7 @@ class DogCamSocket():
   def SendPosition(self, direction):
     JsonMessage = {
       "action": direction,
-      "type": "movement",
+      "type": "action",
       "source": "dogcamai"
     }
 
