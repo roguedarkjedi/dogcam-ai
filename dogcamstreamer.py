@@ -30,6 +30,9 @@ class DogCamStreamer():
 
   def Open(self):
     DogCamLogger.Log("Webstream: Loading video feed", DCLogLevel.Notice)
+    if self.__cap is not None:
+      DogCamLogger.Log("Webstream: Another capture instance already exists", DCLogLevel.Warn)
+    
     self.__cap = cv2.VideoCapture(self.vidURL)
     self.__HasBeenFlushed = False
 
@@ -47,13 +50,20 @@ class DogCamStreamer():
       self.resHeight = self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     return True
 
+  # Called by outside functions to get us going
   def Start(self):
+    # if we already have a running instance, don't start it again
+    if self.__cap is not None:
+      return True
+      
     if self.Open():
       DogCamLogger.Log("Webstream: Starting thread")
       self.__Running = True
       self.__thread = threading.Thread(target=self.__Update, daemon=True)
       self.__thread.start()
       return True
+    else:
+      self.Stop()
 
     return False
 
@@ -75,15 +85,20 @@ class DogCamStreamer():
 
   def __CheckTimeout(self):
     hasHitTimeout = (time.time() - self.__LastErrorTime) >= self.netTimeout and self.__LastErrorTime > 0.0
+    # See if we should check to restart the capture software again
     if self.__cap is None or self.__cap.isOpened() is False or hasHitTimeout:
+      # We have hit the timeout and are starved of updates
       if hasHitTimeout:
-        DogCamLogger.Log("Webstream: Timeout has occurred!", DCLogLevel.Warn)
+        # At this point we are starved of updates entirely and we fail out.
+        # Nothing recovers from this instance and probably should
+        DogCamLogger.Log("Webstream: Timeout has occurred!", DCLogLevel.Notice)
         self.__Running = False
         self.__ReleaseCapture()
         self.__BlankImage()
         return False
       else:
         self.__SetError()
+        DogCamLogger.Log("Webstream: Attempting to restart capture", DCLogLevel.Log)
         self.Open()
         time.sleep(1)
     return True
@@ -105,9 +120,11 @@ class DogCamStreamer():
 
   def __Update(self):
     while self.__Running:
+      # If we lose our device, stop this thread.
       if self.__CheckTimeout() is False:
         break
 
+      # if we suddenly lose our instance, set an error flag and attempt to get it again
       if self.__cap is None:
         self.__SetError()
         self.__FPSSync()
