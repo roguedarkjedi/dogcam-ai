@@ -103,7 +103,7 @@ class DogCamStreamer():
     if isTotalDisconnection:
       # At this point we are starved of updates entirely and we fail out.
       DogCamLogger.Log("Webstream: Timeout has occurred!", DCLogLevel.Notice)
-      self.__SetStatus(f"Total timeout has occurred! Stopping video capture service")
+      self.__SetStatus("Total timeout has occurred! Stopping video capture service")
       self.__Running = False
       self.__ReleaseCapture()
       self.__BlankImage()
