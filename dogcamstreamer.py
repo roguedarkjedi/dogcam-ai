@@ -155,7 +155,7 @@ class DogCamStreamer():
         continue
       # TODO: Heavily consider dropping the capture rate functionality here. While it's rather silly, it's to attempt
       # to limit the number of resize operations that are done on the image, saving some CPU cycles.
-      elif not self.__HasBeenFlushed or ((time.time() - self.__LastReadTime) >= self.captureRate and self.__HasBeenFlushed) or self.captureRate == 0.0:
+      elif self.__HasBeenFlushed is False or ((time.time() - self.__LastReadTime) >= self.captureRate and self.__HasBeenFlushed) or self.captureRate == 0.0:
         DogCamLogger.Log("Webstream: Capturing image", DCLogLevel.Verbose)
         self.__img = cv2.resize(image, (self.resWidth, self.resHeight))
         self.__LastReadTime = time.time()
@@ -163,7 +163,7 @@ class DogCamStreamer():
         if self.__LastErrorTime > 0.0:
           DogCamLogger.Log("Webstream: Recovered from net disruption")
           self.__SetStatus("Recovered from net disruption")
-          self.__LastErrorTime = 0
+          self.__LastErrorTime = 0.0
       else:
         DogCamLogger.Log("Webstream: Dropped frame (safe)", DCLogLevel.Verbose)
         # Since the frame is going to be dropped, clear the frame buffer to prevent acting on old data
