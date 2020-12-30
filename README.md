@@ -30,7 +30,7 @@ If using the [Corel USB Accelerator](https://coral.ai/products/accelerator/) (Re
 
 ### Streaming
 **StreamingURL**: is the rtmp ingest url for the webcam.  
-**StreamingCaptureRate**: the delay between capturing an frame to propose it for AI processing (if we haven't grabbed a newer frame).
+**StreamingCaptureRate**: the delay between capturing an frame to propose it for AI processing (if we haven't grabbed a newer frame).  
 **StreamingFrameBufferSize**: How big of a frame buffer the streaming capture has. Lower is less resource usage.  
 **StreamingTimeout**: The amount of time from no longer getting a new frame that we consider the rtmp server to be disconnected.  
 
