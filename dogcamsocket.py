@@ -50,17 +50,21 @@ class DogCamSocket():
       self.__thread.join()
 
   def SendPosition(self, direction):
-    if self.__processing is False or self.__socket is None or self.__reconnect is True:
-      DogCamLogger.Log("Websocket: Not connected!", DCLogLevel.Warn)
-      return
-
     JsonMessage = {
       "action": direction,
       "source": "dogcamai"
     }
 
-    DogCamLogger.Log("Websocket: Sending new postion message", DCLogLevel.Debug)
-    self.__socket.send(json.dumps(JsonMessage))
+    self.SendMessage(json.dumps(JsonMessage))
+
+  # This function should typically be given json but does not check to see if you have given it valid json
+  # as it doesn't essentially require json
+  def SendMessage(self, message):
+    if self.__processing is False or self.__socket is None or self.__reconnect is True:
+      DogCamLogger.Log("Websocket: Not connected!", DCLogLevel.Warn)
+      return
+
+    self.__socket.send(message)
 
   def __OnConnected(self):
     self.__processing = True
