@@ -12,8 +12,6 @@ class DogCamAITFLite(DogCamAIBase):
     super().__init__()
 
   def _ProcessImageInternal(self):
-    # self._image = cv2.resize(self._image, (self._width, self._height))
-
     img = self._image.copy()
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = Image.fromarray(img)
@@ -24,7 +22,7 @@ class DogCamAITFLite(DogCamAIBase):
 
     for obj in detectionData:
       if (not self._targetID or (isinstance(self._targetID, list) and obj.label_id in self._targetID)):
-        DogCamLogger.Log(f"AI: Found object {obj.label_id} with confidence {obj.score}")
+        self._LogObjectFound(obj.label_id, obj.score)
 
         # Get the bounding box of the object
         box = obj.bounding_box.flatten().astype(int)

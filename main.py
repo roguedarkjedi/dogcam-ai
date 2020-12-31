@@ -17,7 +17,8 @@ dcai = DogCamAIFactory.CreateAI(aiType=aiUsed,
   boundsSize=dcc.AIBoundsSize,
   minimumConfidence=dcc.AIMinimumConfidence,
   displayOut=dcc.AIDisplayVision,
-  detectionID=dcc.AIDetectID)
+  detectionID=dcc.AIDetectID,
+  logMatches=dcc.AILogMatches)
 
 if dcai is None:
   DogCamLogger.Log("AI Project exiting due to failure to start AI", DCLogLevel.Notice)
@@ -44,7 +45,8 @@ if dcs.Start():
 
     while dcai.commandQueue.empty() is False:
       command = dcai.commandQueue.get_nowait()
-      DogCamLogger.Log(f"Got command: {command}", DCLogLevel.Log)
+      if dcc.AILogMatches is True:
+        DogCamLogger.Log(f"Got command: {command}", DCLogLevel.Log)
       dcso.SendPosition(command)
 
     # Push info messages constantly.

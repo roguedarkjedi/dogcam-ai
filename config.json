@@ -1,6 +1,6 @@
 {
   "StreamingURL": "rtmp://192.168.50.4/camera/g",
-  "StreamingCaptureRate": 0.05,
+  "StreamingCaptureRate": 0.0,
   "StreamingFrameBufferSize": 3,
   "StreamingTimeout": 120.0,
   
@@ -12,10 +12,11 @@
     "dnn": "./training/mobilenet.pb",
     "tf": "./training/mobilenet_ssd_v2.tflite"
   },
-  "AIDisplayVision": false,
+  "AIDisplayVision": true,
   "AIBoundsSize": 10,
   "AIMinimumConfidence": 0.4,
   "AIDetectID": [17, 18],
+  "AILogMatches": false,
 
   "LoggingLevel": "log"
 }

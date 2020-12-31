@@ -27,17 +27,20 @@ class DogCamAIBase():
   _runningThread = False
   # AI Confidence levels
   _minConfidence = 0
+  # If we should log match data
+  _logMatches = False
 
   def __init__(self):
     DogCamLogger.Log("AI: Allocated", DCLogLevel.Verbose)
 
   def Initialize(self, boundsSize=100, minimumConfidence=0.3, displayOut=False,
-      detectionID=0):
+      detectionID=0, logMatches=False):
 
     self.debugDisplay = displayOut
     self._bounds = int(boundsSize)
     self._minConfidence = float(minimumConfidence)
     self._image = None
+    self._logMatches = logMatches
     self.__pendingImage = None
     self._targetID = detectionID
 
@@ -105,6 +108,10 @@ class DogCamAIBase():
       cv2.imshow("Output", self._image)
 
     DogCamLogger.Log(f"AI: Image processed in {ProcessingTime} seconds", DCLogLevel.Verbose)
+
+  def _LogObjectFound(self, objectID, confidence):
+    if confidence >= self._minConfidence and self._logMatches is True:
+      DogCamLogger.Log(f"AI: Found object {objectID} with confidence {confidence}")
 
   def _DrawBoundingBox(self):
     # Draw bounding box

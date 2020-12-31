@@ -45,6 +45,7 @@ If using the [Corel USB Accelerator](https://coral.ai/products/accelerator/) (Re
 **AIBoundsSize**: The bounding box around the edges of the screen. This dictates how far away from the screen boundaries to place the edge detection. If an object overlaps or intersects this will cause commands to be sent to the websocket server.  
 **AIMinimumConfidence**: The minimum confidence level to consider the an object for detection.  
 **AIDetectID**: The label id for the class detection to filter on ([ids found here](https://github.com/tensorflow/models/blob/master/research/object_detection/data/mscoco_label_map.pbtxt)). If set to 0, all detected objects can cause commands to be sent. It is recommended you fill this config with a number other than 0. If you would like to detect more than one object, this config does take a json array with the ids that will also generate positives (the first object detected will be acted upon).  
+**AILogMatches**: Controls the log messaging spew if the AI should print out every time it detects an object. Processing is better with this set to false.  
 
 ### Misc
 **LoggingLevel**: The logging spew level for the output console. Any messages with values higher than the setting will be suppressed. Passing `silence` will mute all messages.  
@@ -63,5 +64,5 @@ A list of valid options can be seen below:
 ## Caveats:
 ---------------
 * Better training models with small focused data sets would be of better usage. Until a better model is created, this project still uses [mobilessd from tensorflow](https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API). For the usb accelerated functionality, [this model is used](https://dl.google.com/coral/canned_models/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite).
-* On the Raspberry Pi 3B, a single frame with AI processing takes on average, 2 seconds. This is the upper bounds of what this hardware can do with the given model. Using an AI accelerator is recommended.
-* On a Raspberry Pi 3B, this program does incredibly well with an ingest of 720p/24fps @ 2500kbps. Anything higher has been observed to induce video decoding latency on the box.
+* On the Raspberry Pi 3B, a single frame with AI processing takes on average, 2 seconds. This is the upper bounds of what this hardware can do with the given model. Using an AI accelerator is recommended as it lowers processing time to a level where this functionality can be reached.
+* On a Raspberry Pi 3B, this program does incredibly well with an ingest of 720p/24fps @ 2500kbps with keyframe interval set to 1. Anything higher has been observed to induce video decoding delays on the box. This is with an iPhone 6s camera using the Streamlabs mobile app. Alternative apps have shown around 8-11s latency from capture time to AI output.
