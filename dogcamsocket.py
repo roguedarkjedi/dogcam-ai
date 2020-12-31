@@ -64,10 +64,7 @@ class DogCamSocket():
   # This function should typically be given json but does not check to see if you have given it valid json
   # as it doesn't essentially require json
   def SendMessage(self, message):
-    if self.IsConnectionReady() is False:
-      return
-    
-    if message is None:
+    if message is None or self.IsConnectionReady() is False:
       return
 
     try:
