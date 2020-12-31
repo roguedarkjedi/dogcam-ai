@@ -79,7 +79,7 @@ class DogCamAIBase():
         self.__ProcessImage()
         self._image = None
 
-        time.sleep(0.000333)
+        time.sleep(0.0001)
 
     cv2.destroyAllWindows()
 
