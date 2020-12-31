@@ -14,7 +14,8 @@ aiUsed = dcc.AIMethod.lower()
 
 dcai = DogCamAIFactory.CreateAI(aiType=aiUsed,
   aiModel=dcc.AIModels[aiUsed],
-  boundsSize=dcc.AIBoundsSize,
+  boundsXSize=dcc.AIBoundsXSize,
+  boundsYSize=dcc.AIBoundsYSize,
   minimumConfidence=dcc.AIMinimumConfidence,
   displayOut=dcc.AIDisplayVision,
   detectionID=dcc.AIDetectID,

@@ -22,7 +22,9 @@ class DogCamAIBase():
   # Height of the image to process
   _height = 0
   # Thickness of the borders
-  _bounds = 0
+  _boundsX = 0
+  # Thickness of the borders
+  _boundsY = 0
   # Thread flags
   _runningThread = False
   # AI Confidence levels
@@ -33,11 +35,12 @@ class DogCamAIBase():
   def __init__(self):
     DogCamLogger.Log("AI: Allocated", DCLogLevel.Verbose)
 
-  def Initialize(self, boundsSize=100, minimumConfidence=0.3, displayOut=False,
+  def Initialize(self, boundsXSize=10, boundsYSize=10, minimumConfidence=0.3, displayOut=False,
       detectionID=0, logMatches=False):
 
     self.debugDisplay = displayOut
-    self._bounds = int(boundsSize)
+    self._boundsX = int(boundsXSize)
+    self._boundsY = int(boundsYSize)
     self._minConfidence = float(minimumConfidence)
     self._image = None
     self._logMatches = logMatches
@@ -115,17 +118,17 @@ class DogCamAIBase():
 
   def _DrawBoundingBox(self):
     # Draw bounding box
-    cv2.rectangle(self._image, (self._bounds, self._bounds), (self._width-self._bounds,
-                  self._height-self._bounds), (100,0,100), 4)
+    cv2.rectangle(self._image, (self._boundsX, self._boundsY), (self._width-self._boundsX,
+                  self._height-self._boundsY), (100,0,100), 4)
 
   def _HandleObjectDetectionResult(self, left, right, top, bottom):
     cv2.rectangle(self._image, (left, top), (right, bottom), (100,25,0), 2)
 
     # AABB bounding collision testing
-    BoxTop = (top < self._bounds)
-    BoxBottom = (bottom > self._height-self._bounds)
-    BoxLeft = (left <= self._bounds)
-    BoxRight = (right > self._width-self._bounds)
+    BoxTop = (top < self._boundsY)
+    BoxBottom = (bottom > self._height-self._boundsY)
+    BoxLeft = (left <= self._boundsX)
+    BoxRight = (right > self._width-self._boundsX)
 
     # If the dog is in a wide shot
     # (meaning they take up the left and right collision at the same time)

@@ -42,7 +42,8 @@ If using the [Corel USB Accelerator](https://coral.ai/products/accelerator/) (Re
 **AIMethod**: Current valid values are `"dnn"` and `"tf"`. If set to `tf`, the USB Accelerator libraries are used. Otherwise, OpenCV's dnn method will be used to process the images from the camera.  
 **AIModels**: A json dictionary that contains the relative paths to the AI model files. Valid keys are `"dnn"` and `"tf"`. Your current `AIMethod` must have a defined model or the program will crash.  
 **AIDisplayVision**: Have the AI display on screen what it sees as it runs. This does run slightly slower.  
-**AIBoundsSize**: The bounding box around the edges of the screen. This dictates how far away from the screen boundaries to place the edge detection. If an object overlaps or intersects this will cause commands to be sent to the websocket server.  
+**AIBoundsXSize**: The bounding box length around the edges of the screen. This dictates how far away from the screen boundaries to place the edge detection. If an object overlaps or intersects this will cause commands to be sent to the websocket server.  
+**AIBoundsYSize**: Same as above but for height.  
 **AIMinimumConfidence**: The minimum confidence level to consider the an object for detection.  
 **AIDetectID**: The label id for the class detection to filter on ([ids found here](https://github.com/tensorflow/models/blob/master/research/object_detection/data/mscoco_label_map.pbtxt)). If set to 0, all detected objects can cause commands to be sent. It is recommended you fill this config with a number other than 0. If you would like to detect more than one object, this config does take a json array with the ids that will also generate positives (the first object detected will be acted upon).  
 **AILogMatches**: Controls the log messaging spew if the AI should print out every time it detects an object. Processing is better with this set to false.  

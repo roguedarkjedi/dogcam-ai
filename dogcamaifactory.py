@@ -6,7 +6,7 @@ from os import path
 class DogCamAIFactory():
 
   @staticmethod
-  def CreateAI(aiType, aiModel, boundsSize=100, minimumConfidence=0.3, displayOut=False,
+  def CreateAI(aiType, aiModel, boundsXSize=10, boundsYSize=10, minimumConfidence=0.3, displayOut=False,
                 detectionID=0, logMatches=False):
     NewAIClass = None
 
@@ -23,7 +23,7 @@ class DogCamAIFactory():
       NewAIClass = DogCamAIDNN(aiModel)
 
     if NewAIClass is not None:
-      NewAIClass.Initialize(boundsSize, minimumConfidence, displayOut, detectionID, logMatches)
+      NewAIClass.Initialize(boundsXSize, boundsYSize, minimumConfidence, displayOut, detectionID, logMatches)
     else:
       DogCamLogger.Log(f"AI: Could not create class of type {className}! Fatal error!",
                 DCLogLevel.Error)
