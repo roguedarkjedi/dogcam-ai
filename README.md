@@ -30,9 +30,8 @@ If using the [Corel USB Accelerator](https://coral.ai/products/accelerator/) (Re
 
 ### Streaming
 **StreamingURL**: is the rtmp ingest url for the webcam.  
-**StreamingCaptureRate**: the delay between capturing an frame to propose it for AI processing (if we haven't grabbed a newer frame).  
 **StreamingFrameBufferSize**: How big of a frame buffer the streaming capture has. Lower is less resource usage.  
-**StreamingTimeout**: The amount of time from no longer getting a new frame that we consider the rtmp server to be disconnected.  
+**StreamingTimeout**: The amount of time from no longer getting a new frame that we consider the rtmp server to be disconnected. Sockets typically timeout within 30 seconds, so it's advised to keep this value at 120 or greater to allow for retries.  
 
 ### Servo Control
 **CommandsAddress**: The websocket server location that's running [dogcam](https://github.com/roguedarkjedi/dogcam).  
@@ -65,5 +64,15 @@ A list of valid options can be seen below:
 ## Caveats:
 ---------------
 * Better training models with small focused data sets would be of better usage. Until a better model is created, this project still uses [mobilessd from tensorflow](https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API). For the usb accelerated functionality, [this model is used](https://dl.google.com/coral/canned_models/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite).
-* On the Raspberry Pi 3B, a single frame with AI processing takes on average, 2 seconds. This is the upper bounds of what this hardware can do with the given model. Using an AI accelerator is recommended as it lowers processing time to a level where this functionality can be reached.
-* On a Raspberry Pi 3B, this program does incredibly well with an ingest of 720p/24fps @ 2500kbps with keyframe interval set to 1. Anything higher has been observed to induce video decoding delays on the box. This is with an iPhone 6s camera using the Streamlabs mobile app. Alternative apps have shown around 8-11s latency from capture time to AI output.
+* On a raw Raspberry Pi 3B, a single frame of AI processing takes on average, two seconds. This is the upper bounds of what this hardware can do with the given model.
+* Due to the amount of work that goes on in this program, it is recommended to exclusively use the Pi host for just this project and/or dogcam. Anything more will push the hardware past its limitations. It's theorized that this is mostly due to the sheer amount of bandwidth of data in flight through the chip and power draw.
+* Removed from current moving forward is the old capture limiter, resources can no longer be committed to making sure that it's even useful for lower spec machines (e.g. without AI accelerator chips), but if needed, it can be [found here](https://github.com/roguedarkjedi/dogcam-ai/tree/noaccel).
+
+
+## Final Notes:
+---------------
+* Input video was measured using the Streamlabs mobile app on an iPhone 6s using 720p/24fps @ 2500kbps with low Audio quality settings. This gives a roundabout time from action to AI vision output to an average value of about a second.
+* Alternative apps that are free based have been tested and sadly have been found that they perform worse on average. It is not known what Streamlabs does in their video pipeline to make it so efficient, and it is likely they will not relay that information to anyone.
+* Using an AI accelerator chip is extremely recommended as it lowers object detection and processing time to a level where its production ready for a stream.
+* If using an accelerator chip, cooling must be fully considered and implemented to avoid damage to any parts.
+
