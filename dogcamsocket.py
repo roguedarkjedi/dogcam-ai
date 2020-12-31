@@ -70,7 +70,11 @@ class DogCamSocket():
     if message is None:
       return
 
-    self.__socket.send(message)
+    try:
+      self.__socket.send(message)
+    except Exception as ex:
+      DogCamLogger.Log(f"Websocket: Failed to send message {message}!\nException: {ex}", DCLogLevel.Warn)
+
 
   def __OnConnected(self):
     self.__processing = True
