@@ -109,7 +109,7 @@ class DogCamSocket():
 
         DogCamLogger.Log(f"Websocket: Got message: {Message}", DCLogLevel.Debug)
 
-      except websocket.WebSocketConnectionClosedException:
+      except (websocket.WebSocketConnectionClosedException, BrokenPipeError):
         DogCamLogger.Log("Websocket: was disconnected!", DCLogLevel.Warn)
         self.__socket = None
         continue
