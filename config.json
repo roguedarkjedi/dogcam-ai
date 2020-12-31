@@ -12,7 +12,7 @@
     "dnn": "./training/mobilenet.pb",
     "tf": "./training/mobilenet_ssd_v2.tflite"
   },
-  "AIDisplayVision": true,
+  "AIDisplayVision": false,
   "AIBoundsXSize": 10,
   "AIBoundsYSize": 5,
   "AIMinimumConfidence": 0.4,
