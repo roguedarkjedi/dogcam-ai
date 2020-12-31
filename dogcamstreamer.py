@@ -10,10 +10,8 @@ class DogCamStreamer():
   __thread = None
 
   __Running = False
-  __LastReadTime = 0.0
   __LastErrorTime = 0.0
   __LastConnectionAttempt = 0.0
-  __HasBeenFlushed = False
   __CurrentStatus = None
 
   resWidth = 0
@@ -21,13 +19,11 @@ class DogCamStreamer():
   fbSize = 0
   fpsRate = 0.0
   vidURL = ""
-  captureRate=0.0
   netTimeout=0.0
 
-  def __init__(self, inURL, timeBetweenCaptures=1.2, disconnectionTimeout=45.0, frameBufferSize=5):
+  def __init__(self, inURL, disconnectionTimeout=120.0, frameBufferSize=5):
     self.vidURL = inURL
 
-    self.captureRate = timeBetweenCaptures
     self.netTimeout = disconnectionTimeout
     self.fbSize = frameBufferSize
 
@@ -38,7 +34,6 @@ class DogCamStreamer():
 
     self.__LastConnectionAttempt = time.time()
     self.__cap = cv2.VideoCapture(self.vidURL)
-    self.__HasBeenFlushed = False
 
     # Keep only a few frames in the buffer, dropping dead frames
     self.__cap.set(cv2.CAP_PROP_BUFFERSIZE, self.fbSize)
@@ -153,21 +148,13 @@ class DogCamStreamer():
         self.__SetError()
         self.__FPSSync()
         continue
-      # TODO: Heavily consider dropping the capture rate functionality here. While it's rather silly, it's to attempt
-      # to limit the number of resize operations that are done on the image, saving some CPU cycles.
-      elif self.__HasBeenFlushed is False or ((time.time() - self.__LastReadTime) >= self.captureRate and self.__HasBeenFlushed) or self.captureRate == 0.0:
+      else:
         DogCamLogger.Log("Webstream: Capturing image", DCLogLevel.Verbose)
         self.__img = cv2.resize(image, (self.resWidth, self.resHeight))
-        self.__LastReadTime = time.time()
-        self.__HasBeenFlushed = False
         if self.__LastErrorTime > 0.0:
           DogCamLogger.Log("Webstream: Recovered from net disruption")
           self.__SetStatus("Recovered from net disruption")
           self.__LastErrorTime = 0.0
-      else:
-        DogCamLogger.Log("Webstream: Dropped frame (safe)", DCLogLevel.Verbose)
-        # Since the frame is going to be dropped, clear the frame buffer to prevent acting on old data
-        self.__BlankImage()
 
       self.__FPSSync()
 
@@ -177,10 +164,7 @@ class DogCamStreamer():
     
   def Read(self):
     # Pulls the current image from the framebuffer var
-    retImg = self.__img
-    self.__HasBeenFlushed = True
-    #print(f"it has been {(time.time() - self.__LastReadTime)} seconds since grab")
-    return retImg
+    return self.__img
 
   # If the thread is currently running
   def Running(self):

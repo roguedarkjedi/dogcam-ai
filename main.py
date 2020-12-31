@@ -26,7 +26,6 @@ if dcai is None:
   exit()
 
 dcs = DogCamStreamer(dcc.StreamingURL,
-  timeBetweenCaptures=dcc.StreamingCaptureRate,
   disconnectionTimeout=dcc.StreamingTimeout,
   frameBufferSize=dcc.StreamingFrameBufferSize)
 
