@@ -21,9 +21,9 @@ The end goal is to keep this running on a raspberry pi with relatively good dete
 1. Grab the OpenCV libraries [from here](https://github.com/dlime/Faster_OpenCV_4_Raspberry_Pi)
 2. Install all the required modules `python3 -m pip install --upgrade -r requirements.txt`
 3. Change values in the config.json
-4. Run main.py
+4. Execute Run.sh
 
-If using the [Corel USB Accelerator](https://coral.ai/products/accelerator/) (Recommended), you need to also install `libedgetpu1-std python3-edgetpu` packages from the Google repro. You can get that by following the directions found [on this website](https://coral.ai/docs/accelerator/get-started/#on-linux).
+If using the [Coral USB Accelerator](https://coral.ai/products/accelerator/) (Recommended), you need to also install additional packages for using the Coral accelerator. You can get them by following the directions found [on this website](https://coral.ai/docs/accelerator/get-started/#on-linux).
 
 ## Configuration:
 -----------------
@@ -66,7 +66,7 @@ A list of valid options can be seen below:
 * Better training models with small focused data sets would be of better usage. Until a better model is created, this project still uses [mobilessd from tensorflow](https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API). For the usb accelerated functionality, [this model is used](https://dl.google.com/coral/canned_models/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite).
 * On a raw Raspberry Pi 3B, a single frame of AI processing takes on average, two seconds. This is the upper bounds of what this hardware can do with the given model.
 * Due to the amount of work that goes on in this program, it is recommended to exclusively use the Pi host for just this project and/or dogcam. Anything more will push the hardware past its limitations. It's theorized that this is mostly due to the sheer amount of bandwidth of data in flight through the chip and power draw.
-* Removed from current moving forward is the old capture limiter, resources can no longer be committed to making sure that it's even useful for lower spec machines (e.g. without AI accelerator chips), but if needed, it can be [found here](https://github.com/roguedarkjedi/dogcam-ai/tree/noaccel).
+* Moving forward the old capture limiter has been removed, resources can no longer be committed to making sure that it's even useful for lower spec machines (e.g. without AI accelerator chips), but if needed, it can be [found here](https://github.com/roguedarkjedi/dogcam-ai/tree/noaccel).
 
 
 ## Final Notes:

@@ -1,9 +1,9 @@
 {
-  "StreamingURL": "rtmp://192.168.50.4/camera/g",
+  "StreamingURL": "rtmp://localhost/camera/g",
   "StreamingFrameBufferSize": 3,
   "StreamingTimeout": 120.0,
   
-  "CommandsAddress": "ws://192.168.50.169:5867/",
+  "CommandsAddress": "ws://192.168.1.82:5867/",
   "CommandsTimeout": 50.0,
   
   "AIMethod": "tf",
