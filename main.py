@@ -3,10 +3,19 @@ from dogcamaifactory import DogCamAIFactory
 from dogcamsocket import DogCamSocket
 from dogcamconfig import DogCamConfig
 from dogcamlogger import DogCamLogger, DCLogLevel
+from pathlib import Path
 import time
+import os
 
+# Remove any handles before we start
+if os.path.exists('exit_handle'):
+  os.remove('exit_handle')
+
+# Start AI stuff
 DogCamLogger.Start()
 DogCamLogger.Log("Starting classes", DCLogLevel.Notice)
+
+exit_handle = Path('exit_handle')
 
 dcc = DogCamConfig()
 
@@ -53,6 +62,11 @@ if dcs.Start():
     dcso.SendMessage(dcs.GetStatus())
 
     time.sleep(0.001)
+
+    # Check to see if we have an interrupt file/handle fired
+    if exit_handle.exists():
+       DogCamLogger.Log("Exit handle exists, stopping execution", DCLogLevel.Notice)
+       break
 
 DogCamLogger.Log("Ending AI controller", DCLogLevel.Notice)
 dcs.Stop()

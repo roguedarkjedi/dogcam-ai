@@ -131,4 +131,5 @@ dmypy.json
 # Project stuff
 training/
 dogcam-ai.geany
+exit_handle
 Update.sh
