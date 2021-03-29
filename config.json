@@ -17,6 +17,8 @@
   "AIMinimumConfidence": 0.4,
   "AIDetectID": [17, 18],
   "AILogMatches": false,
+  "AIThrottleTilt": true,
+  "AITiltCooldown": 0.75,
 
   "LoggingLevel": "log"
 }

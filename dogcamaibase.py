@@ -32,11 +32,17 @@ class DogCamAIBase():
   # If we should log match data
   _logMatches = False
 
+  # Tilt Throttling
+  _blockTiltMove = False
+  _LastTiltMoveTime = 0
+  _TiltMoveCooldown = 0.75
+  _ThrottleTiltMovement = False
+
   def __init__(self):
     DogCamLogger.Log("AI: Allocated", DCLogLevel.Verbose)
 
   def Initialize(self, boundsXSize=10, boundsYSize=10, minimumConfidence=0.3, displayOut=False,
-      detectionID=0, logMatches=False):
+      detectionID=0, logMatches=False, throttleTilt=False, tiltCooldown=0.75):
 
     self.debugDisplay = displayOut
     self._boundsX = int(boundsXSize)
@@ -46,6 +52,8 @@ class DogCamAIBase():
     self._logMatches = logMatches
     self.__pendingImage = None
     self._targetID = detectionID
+    self._ThrottleTiltMovement = throttleTilt
+    self._TiltMoveCooldown = tiltCooldown
 
     self._thread = threading.Thread(target=self.__Update)
     DogCamLogger.Log("AI: Initialized", DCLogLevel.Debug)
@@ -101,6 +109,11 @@ class DogCamAIBase():
       return
 
     ProcessingTime=time.time()
+
+    # Handle tilt throttling
+    if (ProcessingTime - self._LastTiltMoveTime) > self._TiltMoveCooldown:
+      self._blockTiltMove = False
+
     DogCamLogger.Log(f"AI: Processing image at {ProcessingTime}!", DCLogLevel.Verbose)
 
     self._ProcessImageInternal()
@@ -141,7 +154,14 @@ class DogCamAIBase():
 
     # Same as the above but in portrait
     if BoxTop ^ BoxBottom:
-      if BoxTop:
-        self.commandQueue.put_nowait("top")
-      else:
-        self.commandQueue.put_nowait("bottom")
+      if self._blockTiltMove is False:
+        if BoxTop:
+          self.commandQueue.put_nowait("top")
+        else:
+          self.commandQueue.put_nowait("bottom")
+
+        self._LastTiltMoveTime = time.time()
+
+        # Handle throttling tilting movement
+        if self._ThrottleTiltMovement is True:
+          self._blockTiltMove = True

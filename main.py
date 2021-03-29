@@ -28,10 +28,12 @@ dcai = DogCamAIFactory.CreateAI(aiType=aiUsed,
   minimumConfidence=dcc.AIMinimumConfidence,
   displayOut=dcc.AIDisplayVision,
   detectionID=dcc.AIDetectID,
-  logMatches=dcc.AILogMatches)
+  logMatches=dcc.AILogMatches,
+  throttleTilt=dcc.AIThrottleTilt,
+  tiltCooldown=dcc.AITiltCooldown)
 
 if dcai is None:
-  DogCamLogger.Log("AI Project exiting due to failure to start AI", DCLogLevel.Notice)
+  DogCamLogger.Log("AI Project exiting due to failure to start AI", DCLogLevel.Error)
   exit()
 
 dcs = DogCamStreamer(dcc.StreamingURL,
