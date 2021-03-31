@@ -6,7 +6,7 @@ This is separate from the base project due to the nature of how much processing 
 The end goal is to keep this running on a raspberry pi with relatively good detection rates. Currently, this detects [all of these objects](https://github.com/tensorflow/models/blob/master/research/object_detection/data/mscoco_label_map.pbtxt), but can filter out results to a given ID.
 
 ## Features:
----------------
+
 * Full automation of streaming capture and frame processing
 * AI detection and box overlap calculation
 * All network functionality has the ability to recover from connection issues
@@ -17,7 +17,7 @@ The end goal is to keep this running on a raspberry pi with relatively good dete
 * Extensible for additional hardware ai devices
 
 ## Install:
----------------
+
 1. Grab the OpenCV libraries [from here](https://github.com/dlime/Faster_OpenCV_4_Raspberry_Pi)
 2. Install all the required modules `python3 -m pip install --upgrade -r requirements.txt`
 3. Change values in the config.json
@@ -26,7 +26,7 @@ The end goal is to keep this running on a raspberry pi with relatively good dete
 If using the [Coral USB Accelerator](https://coral.ai/products/accelerator/) (Recommended), you need to also install additional packages for using the Coral accelerator. You can get them by following the directions found [on this website](https://coral.ai/docs/accelerator/get-started/#on-linux).
 
 ## Configuration:
------------------
+
 
 ### Streaming
 **StreamingURL**: is the rtmp ingest/device uri for the webcam.  
@@ -64,11 +64,11 @@ A list of valid options can be seen below:
 ```
 
 ## Caveats:
----------------
+
 * Better training models with small focused data sets would be of better usage. Until a better model is created, this project still uses [mobilessd from tensorflow](https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API). For the usb accelerated functionality, [this model is used](https://dl.google.com/coral/canned_models/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite).
 
 ## Performance:
----------------
+
 Performance metrics were gathered using input video from the [Streamlabs mobile app](https://streamlabs.com/mobile-app) on an iPhone 6s using 720p/24fps @ 2500kbps with low Audio quality settings.  
 
 Alternative apps that are free based have been tested and sadly have been found that they perform worse on average. It is unknown what Streamlabs does in their video pipeline to make it so efficient, and it is likely they will not relay that information to anyone.  
@@ -93,7 +93,7 @@ This is the golden path for this project. Running the software on here with an a
 Because the Pi 4B has several improvements to the hardware model (namely a separated network interface chip and USB 3.0 support, allowing for better bandwidth and cross direction data), this is the recommended hardware to run the AI model on. However, the CAD files for the dogcam project was designed for a 3B, so modifications would have to be made to have a fully moble device.  
 
 ## Final Notes:
----------------
+
 * Using an AI accelerator chip is extremely recommended as it lowers object detection and processing time to a level where its production ready for a stream. You may be able to run this system without an accelerator on a Pi 4B just fine.
 * If using an accelerator chip, cooling must be fully considered and implemented to avoid damage to any parts.
 * Moving forward the old capture limiter has been removed, resources can no longer be committed to making sure that it's even useful for lower spec machines (e.g. without AI accelerator chips), but if needed, it can be [found here](https://github.com/roguedarkjedi/dogcam-ai/tree/noaccel).
