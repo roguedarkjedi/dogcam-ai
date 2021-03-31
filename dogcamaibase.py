@@ -58,6 +58,8 @@ class DogCamAIBase():
     self._thread = threading.Thread(target=self.__Update)
     DogCamLogger.Log("AI: Initialized", DCLogLevel.Debug)
 
+  # Each AI model needs to implement this, pull the current working imge from the
+  # self._image class member.
   def _ProcessImageInternal(self):
     raise NotImplementedError
 
@@ -130,14 +132,16 @@ class DogCamAIBase():
       DogCamLogger.Log(f"AI: Found object {objectID} with confidence {confidence}")
 
   def _DrawBoundingBox(self):
-    # Draw bounding box
+    # Draw the edge bounding box around the image (this is the boundaries of the detection square)
+    # Anything within this box is considered to be in focus.
     cv2.rectangle(self._image, (self._boundsX, self._boundsY), (self._width-self._boundsX,
                   self._height-self._boundsY), (100,0,100), 4)
 
   def _HandleObjectDetectionResult(self, left, right, top, bottom):
+    # Draw a bounding box around the object we've detected
     cv2.rectangle(self._image, (left, top), (right, bottom), (100,25,0), 2)
 
-    # AABB bounding collision testing
+    # Do inverse AABB bounding collision testing
     BoxTop = (top < self._boundsY)
     BoxBottom = (bottom > self._height-self._boundsY)
     BoxLeft = (left <= self._boundsX)
