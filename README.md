@@ -66,13 +66,14 @@ A list of valid options can be seen below:
 ## Caveats:
 ---------------
 * Better training models with small focused data sets would be of better usage. Until a better model is created, this project still uses [mobilessd from tensorflow](https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API). For the usb accelerated functionality, [this model is used](https://dl.google.com/coral/canned_models/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite).
-* Moving forward the old capture limiter has been removed, resources can no longer be committed to making sure that it's even useful for lower spec machines (e.g. without AI accelerator chips), but if needed, it can be [found here](https://github.com/roguedarkjedi/dogcam-ai/tree/noaccel).
 
 ## Performance:
 ---------------
-Performance metrics were gathered using input video from the Streamlabs mobile app on an iPhone 6s using 720p/24fps @ 2500kbps with low Audio quality settings.  
+Performance metrics were gathered using input video from the [Streamlabs mobile app](https://streamlabs.com/mobile-app) on an iPhone 6s using 720p/24fps @ 2500kbps with low Audio quality settings.  
 
 Alternative apps that are free based have been tested and sadly have been found that they perform worse on average. It is unknown what Streamlabs does in their video pipeline to make it so efficient, and it is likely they will not relay that information to anyone.  
+
+It is heavily recommended to use an AI accelerator chip to offload a lot of the work burden of the AI detection. Performance metrics were a [massive improvement early on in the project and continued to be to the end](https://github.com/roguedarkjedi/dogcam-ai/issues/15).
 
 ### Raspberry Pi 3B
 ---------------------
@@ -87,7 +88,7 @@ Due to the amount of work that goes on in this program, it is recommended to exc
 ---------------------
 This is based off a Raspberry Pi 4B 4GB model  
 
-This is the recommended golden path for this project. Running the software on here with an acelerator allows for the Pi to be able to multitask extremely well. This leads to near real-time processing and action with such minimal latency that it is unnoticable (this software is currently running on the same chip that's handling video ingest from the camera feed, so there might be some additional optimizations on the hardware level that are contributing).  
+This is the golden path for this project. Running the software on here with an acelerator allows for the Pi to be able to multitask extremely well. This leads to near real-time processing and action with such minimal latency that it is unnoticable.  
 
 Because the Pi 4B has several improvements to the hardware model (namely a separated network interface chip and USB 3.0 support, allowing for better bandwidth and cross direction data), this is the recommended hardware to run the AI model on. However, the CAD files for the dogcam project was designed for a 3B, so modifications would have to be made to have a fully moble device.  
 
@@ -95,4 +96,5 @@ Because the Pi 4B has several improvements to the hardware model (namely a separ
 ---------------
 * Using an AI accelerator chip is extremely recommended as it lowers object detection and processing time to a level where its production ready for a stream. You may be able to run this system without an accelerator on a Pi 4B just fine.
 * If using an accelerator chip, cooling must be fully considered and implemented to avoid damage to any parts.
+* Moving forward the old capture limiter has been removed, resources can no longer be committed to making sure that it's even useful for lower spec machines (e.g. without AI accelerator chips), but if needed, it can be [found here](https://github.com/roguedarkjedi/dogcam-ai/tree/noaccel).
 
