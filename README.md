@@ -96,4 +96,5 @@ Because the Pi 4B has several improvements to the hardware model (namely a separ
 * Using an AI accelerator chip is extremely recommended as it lowers object detection and processing time to a level where its production ready for a stream. You may be able to run this system without an accelerator on a Pi 4B just fine.
 * If using an accelerator chip, cooling must be fully considered and implemented to avoid damage to any parts.
 * Moving forward the old capture limiter has been removed, resources can no longer be committed to making sure that it's even useful for lower spec machines (e.g. without AI accelerator chips), but if needed, it can be [found here](https://github.com/roguedarkjedi/dogcam-ai/tree/noaccel).
+* A last note is that this project will only prioritize one pet at a time (which will be whichever is the first pet it notices). There is no processing to make sure multiple animals stay in frame.
 
