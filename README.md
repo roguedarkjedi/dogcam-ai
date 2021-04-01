@@ -7,13 +7,13 @@ The end goal is to keep this running on a raspberry pi with relatively good dete
 
 ## Features:
 * Full automation of streaming capture and frame processing
-* AI detection and box overlap calculation
-* All network functionality has the ability to recover from connection issues
-* Lag reduction mechanics
-* Mostly configurable
+* AI detection and object target focusing
+* Fully fledged graceful recovery functionality from network interruptions
+* Extensive configuration options
 * Logging spew control
 * Support for USB accelerators
 * Extensible for additional hardware ai devices
+* Fully headless operation modes
 
 ## Install:
 1. Grab the OpenCV libraries [from here](https://github.com/dlime/Faster_OpenCV_4_Raspberry_Pi)
