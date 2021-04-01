@@ -8,8 +8,8 @@
   
   "AIMethod": "tf",
   "AIModels": {
-    "dnn": "./training/mobilenet.pb",
-    "tf": "./training/mobilenet_ssd_v2.tflite"
+    "dnn": "./models/mobilenet.pb",
+    "tf": "./models/mobilenet_ssd_v2.tflite"
   },
   "AIDisplayVision": false,
   "AIBoundsXSize": 10,
